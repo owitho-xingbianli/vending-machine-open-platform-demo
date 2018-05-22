@@ -3,7 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.owitho.open</groupId>
   <artifactId>platform-util</artifactId>
+  <packaging>jar</packaging>
   <version>0.1.0-SANPSHOT</version>
-  <name>Archetype - platform-util</name>
+  <name>platform-util</name>
   <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
