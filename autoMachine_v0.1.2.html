@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>autoMachine_v0.1.2</title>
+
+
+<style type="text/css">
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0; }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fcfcfc;
+  border: solid 1px #ccc;
+  border-bottom-color: #bbb;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #bbb
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+
+
+</head>
+
+<body>
+
+<h1 id="toc_0">owitho开放平台接入指南</h1>
+
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>版本</th>
+<th>说明</th>
+<th>作者</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>2018年5月19日</td>
+<td>v0.1.0</td>
+<td>初稿</td>
+<td>钟杨杨</td>
+</tr>
+<tr>
+<td>2018年5月20日</td>
+<td>v0.1.1</td>
+<td>添加了同步陈列接口, 增加了接口详细描述以及部分接口的补充描述, 更新了流程图添加了auth部分流程</td>
+<td>罗迪</td>
+</tr>
+<tr>
+<td>2018年5月22日</td>
+<td>v0.1.2</td>
+<td>更新了auth接口，增加utc字段</td>
+<td>钟杨杨</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_1">接入说明</h2>
+
+<div><pre><code class="language-none">owitho开放平台是允许第三方使用点位服务的平台,owitho平台针对每个接入方平台账号会产生一个唯一的App Id,相对应App Id还会分配一个Secret Key,用于验证身份的合法性.第三方需要完成线下注册, 得到相应的App Id和Secret Key.</code></pre></div>
+
+<div><pre><code class="language-none">开发人员在接入实际业务接口前,要理解开放平台的签名和认证机制,业务接口以统一授权方式作为认证依据.</code></pre></div>
+
+<h2 id="toc_2">accessToken获取以及签名方法</h2>
+
+<h3 id="toc_3">accessToken获取:</h3>
+
+<div><pre><code class="language-none"> * accessToken是第三⽅平台的全局唯一票据，第三方调⽤各接口时都需使用accessToken。第三方需要进⾏行妥善保存。
+ * accessToken的存储至少要保留512个字符空间。accessToken的有效期目前为24个小时，需定时刷新，重复获取将导致上次获取的accessToken失效。
+ * 开放平台以accessToken为接⼝调⽤凭据，来调用接口，所有接口的调用需要先获取accessToken，accessToken在24⼩时内有效，过期需要重新获取，但一天内获取的次数有限，开发者需要⾃自⾏行存储。</code></pre></div>
+
+<h3 id="toc_4">第三方平台API调用所需的accessToken的使用及生成方式说明:</h3>
+
+<div><pre><code class="language-none">    1、为了保密secretKey，第三方需要⼀一个accessToken获取和刷新的中控服务器。⽽而其他业务逻辑服务器所使⽤的accessToken均来⾃于该中控服务器，不应该各⾃去刷新，否则会造成accessToken覆盖而影响业务;
+    2、目前accessToken的有效期通过返回的expire_time来传达，目前是24⼩时。中控服务器需要根据这个有效时间提前去刷新新accessToken。在刷新过程中，中控服务器对外输出的依然是老
+accessToken，此时开放平台后台会保证在刷新短时间内，新老accessToken都可用，这保证了第三⽅业务的平滑过渡;
+    3、accessToken的有效时间可能会在未来有调整，所以中控服务器不仅需要内部定时主动刷新，还需要提供被动刷新accessToken的接口，这样便于业务服务器在API调用获知accessToken已超时的情况下，可以触发accessToken的刷新流程。
+    4、第三方平台可以使用appId和secretKey调⽤ 获取accessToken接⼝ 来获取accessToken</code></pre></div>
+
+<h3 id="toc_5">1. 获取accessToken接口</h3>
+
+<h4 id="toc_6">接口调用请求说明:</h4>
+
+<div><pre><code class="language-none"> ${owitho.url}/getAccessToken?appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;salt=2345&amp;utc=1526697000000&amp;signature=9b7d70ab7f45d1256948811b91660c30
+ ${owitho.url}需要更换为正确的地址, 地址见附录 </code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>appId</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>第三方平台appId</td>
+<td></td>
+</tr>
+<tr>
+<td>salt</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>1000-9999内随机数</td>
+<td></td>
+</tr>
+<tr>
+<td>utc</td>
+<td>long</td>
+<td>Y</td>
+<td>-</td>
+<td>请求时间戳</td>
+<td>毫秒</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>签名</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="toc_7">签名计算规则:</h4>
+
+<p>(1) 将所有参数(signature除外)拼接(包括用户的secretKey)，并用&amp;连接。所有接口的请求
+方法GET/POST/PUT/DELETE的请求参数在计算signature之前需要进行utf-8编码</p>
+
+<div><pre><code class="language-none">appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;salt=2345&amp;utc=1526697000000&amp;secretKey=fresh</code></pre></div>
+
+<p>(2) 将所得到的字符串用UTF-8进行urlEncode</p>
+
+<div><pre><code class="language-none">appId%4cdbc040657a4847b2667e31d9e2c3d9%26salt%3D2345%26utc%3D1526697000000%26secretKey%3Dfresh</code></pre></div>
+
+<p>(3) 用(2)中字符串计算MD5，得到签名</p>
+
+<div><pre><code class="language-none">9b7d70ab7f45d1256948811b91660c30</code></pre></div>
+
+<h4 id="toc_8">返回说明:</h4>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:200,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;:{
+        &quot;accessToken&quot;:&quot;accessToken&quot;,
+        &quot;expireTime&quot;:1452570728594
+    }
+}</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>code</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>返回信息</td>
+<td></td>
+</tr>
+<tr>
+<td>accessToken</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>获取到的凭证</td>
+<td></td>
+</tr>
+<tr>
+<td>expireTime</td>
+<td>long</td>
+<td>Y</td>
+<td>-</td>
+<td>凭证到期时间（毫秒）</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>错误时开放平台会返回错误码等信息，JSON数据包示例如下(该示例为AppID无效错误):</p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:40001,
+    &quot;msg&quot;:&quot;invalid appId&quot;,
+    &quot;data&quot;:{
+
+    }
+}</code></pre></div>
+
+<h3 id="toc_9">2.第三方平台请求时签名的计算规则:</h3>
+
+<h4 id="toc_10">第三方平台API调用必须严格按照如下数据格式：</h4>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;data&quot;:&quot;%7B%22name%22%3A%22jack%22%2C%22age%22%3A23%2C%22country%22%3A%22USA%22%7D&quot;,
+    &quot;salt&quot;:1234,
+    &quot;utc&quot;:1526697000000,
+    &quot;signature&quot;:&quot;5fff5b80aeeef36e1c066b1004ec0262&quot;
+}</code></pre></div>
+
+<div><pre><code class="language-none">salt为1000-9999随机数
+utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
+
+<h4 id="toc_11">签名计算规则:</h4>
+
+<h5 id="toc_12">(1) 首先获取请求的json字符串</h5>
+
+<div><pre><code class="language-none">{&quot;name&quot;:&quot;张三&quot;,&quot;age&quot;:23,&quot;country&quot;:&quot;中国&quot;}</code></pre></div>
+
+<h5 id="toc_13">(2) 将上述字符串用UTF-8进行urlEncode，作为data的value值</h5>
+
+<div><pre><code class="language-none">%7B%22name%22%3A%22%E5%BC%A0%E4%B8%89%22%2C%22age%22%3A23%2C%22country%22%3A%22%E4%B8%AD%E5%9B%BD%22%7D</code></pre></div>
+
+<h5 id="toc_14">(3) appId, accessToken，以及上述字符串data和salt用&amp;拼接起来</h5>
+
+<div><pre><code class="language-none">appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;accessToken=9e7d0604-cb0d-4c7c-a09d-cf365ce6936c&amp;data=%7B%22name%22%3A%22%E5%BC%A0%E4%B8%89%22%2C%22age%22%3A23%2C%22country%22%3A%22%E4%B8%AD%E5%9B%BD%22%7D&amp;salt=1234%26utc%3D1526697000000</code></pre></div>
+
+<h5 id="toc_15">(4) 用（3）中字符串计算MD5，得到签名</h5>
+
+<div><pre><code class="language-none">5fff5b80aeeef36e1c066b1004ec0262</code></pre></div>
+
+<h1 id="toc_16">业务流程</h1>
+
+<p><img src="imags/%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="业务流程图"></p>
+
+<h1 id="toc_17">业务接口</h1>
+
+<div><pre><code class="language-none">以下所有业务接口，data中数据在请求中必须转为不带空格和换行符的字符串，然后用UTF-8进行urlEncode</code></pre></div>
+
+<h2 id="toc_18">1. 增量同步第三方商品信息接口</h2>
+
+<div><pre><code class="language-none">POST  ${owitho.url}/sku/sync</code></pre></div>
+
+<h3 id="toc_19">描述</h3>
+
+<div><pre><code class="language-none">当第三方接入owitho平台时, 需要第三方的商品信息,包括(商品编号,商品名称,商品图片等),以增量方式同步第三方商品信息到owitho平台</code></pre></div>
+
+<h3 id="toc_20">接口说明</h3>
+
+<div><pre><code class="language-none">请保证商品编号的唯一性,当商品编号重复同步时我们的策略是覆盖</code></pre></div>
+
+<h3 id="toc_21">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_22">调用方式</h3>
+
+<div><pre><code class="language-none">POST</code></pre></div>
+
+<h3 id="toc_23">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>skuCode</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>商品编号</td>
+<td>能够唯一表示商品信息的标识</td>
+</tr>
+<tr>
+<td>skuName</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>商品名称</td>
+<td></td>
+</tr>
+<tr>
+<td>skuUnit</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>商品单位</td>
+<td>如：瓶、罐</td>
+</tr>
+<tr>
+<td>skuSpec</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>商品规格</td>
+<td>如：100ml</td>
+</tr>
+<tr>
+<td>originalPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>商品原始售价</td>
+<td></td>
+</tr>
+<tr>
+<td>purchasePrice</td>
+<td>String</td>
+<td>N</td>
+<td>-</td>
+<td>商品进价</td>
+<td></td>
+</tr>
+<tr>
+<td>skuPic</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>公网可访问的商品图片url</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_24">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:1234,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:{
+        skuList:[
+            {
+                 &quot;skuCode&quot;:&quot;200000001&quot;,
+                 &quot;skuName&quot;:&quot;可口可乐&quot;,
+                 &quot;skuUnit&quot;:&quot;罐&quot;,
+                 &quot;skuSpec&quot;:&quot;250ml&quot;,
+                 &quot;originalPrice&quot;:&quot;10.50&quot;,
+                 &quot;purchasePrice&quot;:&quot;5.50&quot;,
+                 &quot;skuPic&quot;:&quot;https://img.xingbianli.cn/%08cola.png&quot;
+            },
+            {
+                 &quot;skuCode&quot;:&quot;200000037&quot;,
+                 &quot;skuName&quot;:&quot;天喔茶庄蜂蜜柚子茶&quot;,
+                 &quot;skuUnit&quot;:&quot;瓶&quot;,
+                 &quot;skuSpec&quot;:&quot;180ml&quot;,
+                 &quot;originalPrice&quot;:&quot;9.50&quot;,
+                 &quot;purchasePrice&quot;:&quot;4.50&quot;,
+                 &quot;skuPic&quot;:&quot;https://img.xingbianli.cn/%08cola.png&quot;
+            }
+        ]
+    }
+}
+</code></pre></div>
+
+<h3 id="toc_25">返回参数说明</h3>
+
+<table>
+<thead>
+<tr>
+<th>返回参数名</th>
+<th>类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>code</td>
+<td>int</td>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>返回信息</td>
+<td></td>
+</tr>
+<tr>
+<td>data</td>
+<td>String</td>
+<td>返回数据</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_26">返回结果示例</h3>
+
+<p>成功返回值</p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;:{}
+}</code></pre></div>
+
+<p>失败返回值 <a href="#%E9%80%9A%E7%94%A8%E8%BF%94%E5%9B%9E%E7%A0%81">详见附录</a></p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;40000&quot;,
+    &quot;msg&quot;:&quot;请求失败&quot;,
+    &quot;data&quot;:{}
+}</code></pre></div>
+
+<h2 id="toc_27">2. 第三方补货时主动同步当前货架的陈列</h2>
+
+<div><pre><code class="language-none">POST  ${owitho.url}/machine/sync
+</code></pre></div>
+
+<h3 id="toc_28">描述</h3>
+
+<div><pre><code class="language-none">第三方补货人员在补货时触发,同步当前货架的陈列给owitho平台</code></pre></div>
+
+<h3 id="toc_29">接口说明</h3>
+
+<div><pre><code class="language-none">当存在合并货道时,开放平台不关心具体的合并逻辑,第三方只需要合并后的货道列表同步给开放平台即可.
+示例:当前货道为1,2,3,4,5,6 此时将2,3货道合并后,同步的货道列表为1,2(合并后货道唯一标识),4,5,6
+开放平台不关心2是货道2还是货道3</code></pre></div>
+
+<h3 id="toc_30">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_31">调用方式</h3>
+
+<div><pre><code class="language-none">POST</code></pre></div>
+
+<h3 id="toc_32">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>machineCode</td>
+<td>String</td>
+<td>Y</td>
+<td>机器code</td>
+<td></td>
+</tr>
+<tr>
+<td>machineStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>机器状态</td>
+<td>10:正常，20:机器离线，30:机器机械故障<a href="#%E6%9C%BA%E5%99%A8%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+<tr>
+<td>slotList</td>
+<td>Array</td>
+<td>Y</td>
+<td>货道陈列详情</td>
+<td></td>
+</tr>
+<tr>
+<td>slotNum</td>
+<td>String</td>
+<td>Y</td>
+<td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>skuCode</td>
+<td>String</td>
+<td>Y</td>
+<td>商品编码</td>
+<td></td>
+</tr>
+<tr>
+<td>skuName</td>
+<td>String</td>
+<td>Y</td>
+<td>商品名称</td>
+<td></td>
+</tr>
+<tr>
+<td>skuDesc</td>
+<td>String</td>
+<td>N</td>
+<td>商品描述</td>
+<td></td>
+</tr>
+<tr>
+<td>originalPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品原始售价</td>
+<td></td>
+</tr>
+<tr>
+<td>actualPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品真实售价</td>
+<td></td>
+</tr>
+<tr>
+<td>maxInventory</td>
+<td>Int</td>
+<td>Y</td>
+<td>最大库存数量</td>
+<td></td>
+</tr>
+<tr>
+<td>currentInventory</td>
+<td>Int</td>
+<td>Y</td>
+<td>实时库存数量</td>
+<td></td>
+</tr>
+<tr>
+<td>slotStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>货道状态</td>
+<td>0:正常，其他:货道故障<a href="#%E8%B4%A7%E9%81%93%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_33">请求参数示例</h2>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:1234,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:{
+          &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,   
+          &quot;machineStatus&quot;:10,    
+          &quot;slotList&quot;: 
+             [
+                 {
+                     &quot;slotNum&quot;:&quot;01&quot;,    
+                     &quot;skuCode&quot;:0000001, 
+                     &quot;skuName&quot;:&quot;600ml可口可乐&quot;,   
+                     &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,   
+                     &quot;originalPrice&quot;:&quot;10.50&quot;, 
+                     &quot;actualPrice&quot;:&quot;10.50&quot;,       
+                     &quot;maxInventory&quot;:10,   
+                     &quot;currentInventory&quot;:3,    
+                     &quot;slotStatus&quot;:0               
+                 },
+                 {
+                     &quot;slotNum&quot;:&quot;02&quot;,   
+                     &quot;skuCode&quot;:&quot;0000002&quot;, 
+                     &quot;skuName&quot;:&quot;原味乐事薯片&quot;,   
+                     &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,   
+                     &quot;originalPrice&quot;:&quot;10.50&quot;, 
+                     &quot;actualPrice&quot;:&quot;10.50&quot;,           
+                     &quot;maxInventory&quot;:10,   
+                     &quot;currentInventory&quot;:5, 
+                     &quot;slotStatus&quot;:0   
+                 }
+             ] 
+    }
+}
+</code></pre></div>
+
+<h3 id="toc_34">返回参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>返回参数名</th>
+<th>类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>code</td>
+<td>int</td>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>返回信息</td>
+<td></td>
+</tr>
+<tr>
+<td>data</td>
+<td>String</td>
+<td>返回数据</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_35">返回参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;&quot;:{
+    }   
+}
+</code></pre></div>
+
+<h2 id="toc_36">3. 根据机器code查询商品陈列、库存以及设备状态（第三方实现）</h2>
+
+<div><pre><code class="language-none">POST  ${third.url}/machine/query
+</code></pre></div>
+
+<h3 id="toc_37">描述</h3>
+
+<div><pre><code class="language-none">
+根据第三方机器code实时查询该机器的商品陈列、库存以及设备状态</code></pre></div>
+
+<h3 id="toc_38">接口说明</h3>
+
+<div><pre><code class="language-none">${third.url}为第三方平台的url，第三方需要在注册的时候提供
+
+注意:当存在合并货道时,开放平台不关心具体的合并逻辑,第三方只需要合并后的货道列表同步给开放平台即可.
+示例:当前货道为1,2,3,4,5,6 此时将2,3货道合并后,同步的货道列表为1,2(合并后货道唯一标识),4,5,6
+开放平台不关心2是货道2还是货道3</code></pre></div>
+
+<h3 id="toc_39">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_40">调用方式</h3>
+
+<div><pre><code class="language-none">POST</code></pre></div>
+
+<h3 id="toc_41">返回参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>machineCode</td>
+<td>String</td>
+<td>Y</td>
+<td>机器code</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_42">请求参数示例</h2>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:1234,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:{
+         &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;
+    }
+}
+</code></pre></div>
+
+<h3 id="toc_43">返回参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>machineCode</td>
+<td>String</td>
+<td>Y</td>
+<td>机器code</td>
+<td></td>
+</tr>
+<tr>
+<td>machineStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>机器状态</td>
+<td>10:正常，20:机器离线，30:机器机械故障<a href="#%E6%9C%BA%E5%99%A8%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+<tr>
+<td>slotList</td>
+<td>Array</td>
+<td>Y</td>
+<td>货道陈列详情</td>
+<td></td>
+</tr>
+<tr>
+<td>slotNum</td>
+<td>String</td>
+<td>Y</td>
+<td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>skuCode</td>
+<td>String</td>
+<td>Y</td>
+<td>商品编码</td>
+<td></td>
+</tr>
+<tr>
+<td>skuName</td>
+<td>String</td>
+<td>Y</td>
+<td>商品名称</td>
+<td></td>
+</tr>
+<tr>
+<td>skuDesc</td>
+<td>String</td>
+<td>N</td>
+<td>商品描述</td>
+<td></td>
+</tr>
+<tr>
+<td>originalPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品原始售价</td>
+<td>商品以两位数点传输，如2.5转成&quot;2.50&quot;</td>
+</tr>
+<tr>
+<td>actualPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品真实售价</td>
+<td>商品以两位数点传输，如12转成&quot;12.00&quot;</td>
+</tr>
+<tr>
+<td>maxInventory</td>
+<td>Int</td>
+<td>Y</td>
+<td>最大库存数量</td>
+<td></td>
+</tr>
+<tr>
+<td>currentInventory</td>
+<td>Int</td>
+<td>Y</td>
+<td>实时库存数量</td>
+<td></td>
+</tr>
+<tr>
+<td>slotStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>货道状态</td>
+<td>0:正常，其他:货道故障<a href="#%E8%B4%A7%E9%81%93%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_44">返回参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;&quot;:{
+            &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,   
+            &quot;machineStatus&quot;:10,    
+            &quot;slotList&quot;: 
+                [
+                    {
+                        &quot;slotNum&quot;:&quot;01&quot;,    
+                        &quot;skuCode&quot;:0000001, 
+                        &quot;skuName&quot;:&quot;600ml可口可乐&quot;,   
+                        &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,   
+                        &quot;originalPrice&quot;:&quot;10.50&quot;, 
+                        &quot;actualPrice&quot;:&quot;10.50&quot;,       
+                        &quot;maxInventory&quot;:10,   
+                        &quot;currentInventory&quot;:3,    
+                        &quot;slotStatus&quot;:0               
+                    },
+                    {
+                        &quot;slotNum&quot;:&quot;02&quot;,   
+                        &quot;skuCode&quot;:&quot;0000002&quot;, 
+                        &quot;skuName&quot;:&quot;原味乐事薯片&quot;,   
+                        &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,   
+                        &quot;originalPrice&quot;:&quot;10.50&quot;, 
+                        &quot;actualPrice&quot;:&quot;10.50&quot;,           
+                        &quot;maxInventory&quot;:10,   
+                        &quot;currentInventory&quot;:5, 
+                        &quot;slotStatus&quot;:0   
+                    }
+                ] 
+    }   
+}
+</code></pre></div>
+
+<h2 id="toc_45">4. 订单通知接口（第三方实现）</h2>
+
+<div><pre><code class="language-none">POST  ${third.url}/order/notice
+</code></pre></div>
+
+<h3 id="toc_46">描述</h3>
+
+<div><pre><code class="language-none">用户下单成功后，把订单以及支付详情通知给第三方平台出货</code></pre></div>
+
+<h3 id="toc_47">接口说明</h3>
+
+<div><pre><code class="language-none">${third.url}为第三方平台的url，第三方需要在注册的时候提供
+接收订单平台应做幂等处理，由于网络或者其他原因，没有接收到返回参数，相同订单有可能做重复推送</code></pre></div>
+
+<h3 id="toc_48">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_49">调用方式</h3>
+
+<div><pre><code class="language-none">POST
+请求格式:application/json</code></pre></div>
+
+<h3 id="toc_50">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>orderViewId</td>
+<td>String</td>
+<td>Y</td>
+<td>订单号</td>
+<td>接收订单平台应做幂等处理，相同订单有可能做重复推送</td>
+</tr>
+<tr>
+<td>machineCode</td>
+<td>String</td>
+<td>Y</td>
+<td>机器code</td>
+<td></td>
+</tr>
+<tr>
+<td>discountMoney</td>
+<td>String</td>
+<td>Y</td>
+<td>支付渠道优惠金额</td>
+<td></td>
+</tr>
+<tr>
+<td>originAmount</td>
+<td>String</td>
+<td>Y</td>
+<td>订单原始金额</td>
+<td></td>
+</tr>
+<tr>
+<td>actualAmount</td>
+<td>String</td>
+<td>Y</td>
+<td>订单实际金额</td>
+<td></td>
+</tr>
+<tr>
+<td>payStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>支付状态</td>
+<td>0:待支付 1:支付成功 2:支付失败<a href="#%E6%9C%BA%E5%99%A8%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+<tr>
+<td>refundStatus</td>
+<td>Int</td>
+<td>Y</td>
+<td>退款状态</td>
+<td>0:无退款 1:退款成功-全部 2:退款成功-部分 3:退款失败<a href="#%E9%80%80%E6%AC%BE%E7%8A%B6%E6%80%81">详见附录</a></td>
+</tr>
+<tr>
+<td>orderTime</td>
+<td>long</td>
+<td>Y</td>
+<td>下单时间</td>
+<td></td>
+</tr>
+<tr>
+<td>payCompleteTime</td>
+<td>long</td>
+<td>Y</td>
+<td>支付成功时间</td>
+<td></td>
+</tr>
+<tr>
+<td>payMethod</td>
+<td>Int</td>
+<td>Y</td>
+<td>支付方式</td>
+<td>1:支付宝支付  2:微信支付  3:猩便利-余额支付 4:银行卡支付 5:现金支付  6:其他支付<a href="#%E6%94%AF%E4%BB%98%E6%96%B9%E5%BC%8F">详见附录</a></td>
+</tr>
+<tr>
+<td>orderDetailList</td>
+<td>Array</td>
+<td>Y</td>
+<td>订单明细详情</td>
+<td></td>
+</tr>
+<tr>
+<td>skuCode</td>
+<td>String</td>
+<td>Y</td>
+<td>商品code</td>
+<td></td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>Int</td>
+<td>Y</td>
+<td>商品数量</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_51">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:1234,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,   
+    &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,
+    &quot;discountMoney&quot;:&quot;12.00&quot;,
+    &quot;originAmount&quot;:&quot;120.00&quot;,
+    &quot;actualAmount&quot;:&quot;108.00&quot;,
+    &quot;payStatus&quot;:1,
+    &quot;refundStatus&quot;:0,
+    &quot;orderTime&quot;:1526696000000,
+    &quot;payCompleteTime&quot;:1526697000000,
+    &quot;payMethod&quot;:1,
+    &quot;orderDetailList&quot;:  
+        [
+           
+                {
+                    &quot;skuCode&quot;:&quot;000000001&quot;,    
+                    &quot;quantity&quot;:3    
+                },
+            
+                {
+                    &quot;skuCode&quot;:&quot;000000002&quot;,  
+                    &quot;quantity&quot;:5   
+                }
+        ]    
+}
+</code></pre></div>
+
+<h3 id="toc_52">返回参数示例</h3>
+
+<div><pre><code class="language-none">
+{
+
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;&quot;:&quot;&quot;
+}
+</code></pre></div>
+
+<h2 id="toc_53">5. 出货回调</h2>
+
+<div><pre><code class="language-none">POST  ${owitho.url}/order/callback</code></pre></div>
+
+<h3 id="toc_54">描述</h3>
+
+<div><pre><code class="language-none">第三方平台接收到出货订单后，回调owitho平台告知出货结果。</code></pre></div>
+
+<h3 id="toc_55">接口说明</h3>
+
+<div><pre><code class="language-none">出货结果按商品平铺展开，每一个商品对应一条出货详情记录。如：订单包含3瓶可乐、2包薯片，则出货详情对应5条记录。回调接口的出货状态不应该传100（出货中）。</code></pre></div>
+
+<h3 id="toc_56">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_57">调用方式</h3>
+
+<div><pre><code class="language-none">POST
+请求格式:application/json</code></pre></div>
+
+<h3 id="toc_58">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>appId</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>第三方平台ID</td>
+<td></td>
+</tr>
+<tr>
+<td>salt</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>1000-9999随机数</td>
+<td></td>
+</tr>
+<tr>
+<td>signature</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>签名</td>
+<td></td>
+</tr>
+<tr>
+<td>utc</td>
+<td>long</td>
+<td>Y</td>
+<td>-</td>
+<td>请求时间戳</td>
+<td>毫秒</td>
+</tr>
+<tr>
+<td>orderViewId</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>订单号</td>
+<td>出货订单唯一标示</td>
+</tr>
+<tr>
+<td>outStatus</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>出货状态</td>
+<td>200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+</tr>
+<tr>
+<td>outDetailList</td>
+<td>Array</td>
+<td>Y</td>
+<td>-</td>
+<td>出货详情</td>
+<td>出货详情根据订单按单个商品平铺展开</td>
+</tr>
+<tr>
+<td>slotNum</td>
+<td>string</td>
+<td>Y</td>
+<td>-</td>
+<td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>skuCode</td>
+<td>string</td>
+<td>Y</td>
+<td>-</td>
+<td>商品id</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+<td>每个商品的出货状态</td>
+<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_59">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:9527,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:{
+        &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,
+        &quot;outStatus&quot;:200,
+        &quot;outDetailList&quot;:[
+            {
+                &quot;slotNum&quot;:&quot;01&quot;,
+                &quot;skuCode&quot;:&quot;20000000100&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;01&quot;,
+                &quot;skuCode&quot;:&quot;20000000100&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;02&quot;,
+                &quot;skuCode&quot;:&quot;20000000200&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;03&quot;,
+                &quot;skuCode&quot;:&quot;20000000200&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            }
+        ]
+    }
+}
+</code></pre></div>
+
+<h3 id="toc_60">返回参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>返回参数名</th>
+<th>类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>code</td>
+<td>int</td>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>返回信息</td>
+<td></td>
+</tr>
+<tr>
+<td>data</td>
+<td>String</td>
+<td>返回数据</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_61">返回结果示例</h3>
+
+<p>成功返回值</p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;success&quot;,
+    &quot;data&quot;:&quot;&quot;
+}</code></pre></div>
+
+<p>失败返回值 <a href="#%E9%80%9A%E7%94%A8%E8%BF%94%E5%9B%9E%E7%A0%81">详见附录</a></p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;40000&quot;,
+    &quot;msg&quot;:&quot;请求失败&quot;,
+    &quot;data&quot;:&quot;&quot;
+}</code></pre></div>
+
+<h2 id="toc_62">6. 出货结果查询(第三方实现)</h2>
+
+<div><pre><code class="language-none">POST  ${third.url}/order/query</code></pre></div>
+
+<h3 id="toc_63">描述</h3>
+
+<div><pre><code class="language-none">第三方平台提供的订单出货结果查询接口，owitho在超时未接收到回调后，会主动查询出货结果</code></pre></div>
+
+<h3 id="toc_64">接口说明</h3>
+
+<div><pre><code class="language-none">根据唯一订单编号查询该订单的出货结果，出货结果按商品平铺展开，每一个商品对应一条出货详情记录。如：订单包含3瓶可乐、2包薯片，则出货详情对应5条记录。</code></pre></div>
+
+<h3 id="toc_65">API版本</h3>
+
+<div><pre><code class="language-none">0.1</code></pre></div>
+
+<h3 id="toc_66">调用方式</h3>
+
+<div><pre><code class="language-none">POST
+请求格式:application/json</code></pre></div>
+
+<h3 id="toc_67">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>orderViewId</td>
+<td>String</td>
+<td>Y</td>
+<td>-</td>
+<td>订单号</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_68">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:9527,
+    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:{
+        &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;
+    }
+}</code></pre></div>
+
+<h3 id="toc_69">返回参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>返回参数名</th>
+<th>类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>code</td>
+<td>int</td>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>msg</td>
+<td>String</td>
+<td>返回信息</td>
+<td></td>
+</tr>
+<tr>
+<td>data</td>
+<td>String</td>
+<td>返回数据</td>
+<td></td>
+</tr>
+<tr>
+<td>orderViewId</td>
+<td>String</td>
+<td>订单号</td>
+<td>出货订单唯一标示</td>
+</tr>
+<tr>
+<td>outStatus</td>
+<td>int</td>
+<td>出货状态</td>
+<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+</tr>
+<tr>
+<td>outDetailList</td>
+<td>Array</td>
+<td>出货详情</td>
+<td>出货详情根据订单按单个商品平铺展开</td>
+</tr>
+<tr>
+<td>slotNum</td>
+<td>string</td>
+<td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>skuCode</td>
+<td>string</td>
+<td>商品id</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>Y</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_70">返回结果示例</h3>
+
+<p>成功返回值</p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;200&quot;,
+    &quot;msg&quot;:&quot;&quot;,
+     &quot;data&quot;:{
+        &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,
+        &quot;outStatus&quot;:200,
+        &quot;outDetailList&quot;:[
+            {
+                &quot;slotNum&quot;:&quot;01&quot;,
+                &quot;skuCode&quot;:&quot;20000000100&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;01&quot;,
+                &quot;skuCode&quot;:&quot;20000000100&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;02&quot;,
+                &quot;skuCode&quot;:&quot;20000000200&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            },
+            {
+                &quot;slotNum&quot;:&quot;03&quot;,
+                &quot;skuCode&quot;:&quot;20000000200&quot;,
+                &quot;status&quot;:&quot;01&quot;
+            }
+        ]
+    }
+}</code></pre></div>
+
+<p>失败返回值 <a href="#%E9%80%9A%E7%94%A8%E8%BF%94%E5%9B%9E%E7%A0%81">详见附录</a></p>
+
+<div><pre><code class="language-none">{
+    &quot;code&quot;:&quot;40000&quot;,
+    &quot;msg&quot;:&quot;&quot;,
+    &quot;data&quot;:&quot;&quot;
+}</code></pre></div>
+
+<h2 id="toc_71">附录</h2>
+
+<h3 id="toc_72">通用返回码</h3>
+
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>200</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>40000</td>
+<td>请求失败</td>
+</tr>
+<tr>
+<td>40001</td>
+<td>appid不存在</td>
+</tr>
+<tr>
+<td>40002</td>
+<td>验证签名失败</td>
+</tr>
+<tr>
+<td>40003</td>
+<td>salt不在范围内</td>
+</tr>
+<tr>
+<td>40004</td>
+<td>utc超时</td>
+</tr>
+<tr>
+<td>50001</td>
+<td>商品同步失败</td>
+</tr>
+<tr>
+<td>50002</td>
+<td>订单回调失败</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_73">状态字典</h3>
+
+<table>
+<thead>
+<tr>
+<th>outStatus</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>100</td>
+<td>出货中</td>
+</tr>
+<tr>
+<td>200</td>
+<td>出货成功</td>
+</tr>
+<tr>
+<td>300</td>
+<td>部分成功</td>
+</tr>
+<tr>
+<td>400</td>
+<td>出货失败</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_74">机器状态</h3>
+
+<table>
+<thead>
+<tr>
+<th>machineStatus</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>10</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>20</td>
+<td>机器离线</td>
+</tr>
+<tr>
+<td>30</td>
+<td>机器机械故障</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_75">货道状态</h3>
+
+<table>
+<thead>
+<tr>
+<th>slotStatus</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>货道故障</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_76">支付状态</h3>
+
+<table>
+<thead>
+<tr>
+<th>payStatus</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0</td>
+<td>待支付</td>
+</tr>
+<tr>
+<td>1</td>
+<td>支付成功</td>
+</tr>
+<tr>
+<td>2</td>
+<td>支付失败</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_77">退款状态</h3>
+
+<table>
+<thead>
+<tr>
+<th>refundStatus</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0</td>
+<td>无退款</td>
+</tr>
+<tr>
+<td>1</td>
+<td>退款成功-全部</td>
+</tr>
+<tr>
+<td>2</td>
+<td>退款成功-部分</td>
+</tr>
+<tr>
+<td>3</td>
+<td>退款失败</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_78">支付方式</h3>
+
+<table>
+<thead>
+<tr>
+<th>payMethod</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1</td>
+<td>支付宝支付</td>
+</tr>
+<tr>
+<td>2</td>
+<td>微信支付</td>
+</tr>
+<tr>
+<td>3</td>
+<td>猩便利-余额支付</td>
+</tr>
+<tr>
+<td>4</td>
+<td>银行卡支付</td>
+</tr>
+<tr>
+<td>5</td>
+<td>现金支付</td>
+</tr>
+<tr>
+<td>6</td>
+<td>其他支付</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_79">owitho平台测试&amp;生产地址</h3>
+
+<div><pre><code class="language-none">测试地址：https://open.owitho.intra.im/
+生产地址：https://open.owitho.com/
+</code></pre></div>
+
+<h1 id="toc_80">GETTING START</h1>
+
+<p><a href="https://github.com/owitho-xingbianli/vending-machine-open-platform-demo">fork me on  github</a></p>
+
+
+
+
+</body>
+
+</html>

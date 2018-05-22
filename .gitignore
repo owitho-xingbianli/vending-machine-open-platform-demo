@@ -1,0 +1,53 @@
+*.class
+/*/.*
+/*/*/.*
+/*/*/*/.*
+/*/*/*/*/.*
+/*/class/*
+/*/classes/*
+/*/.gitignore
+/*/*/target/*
+/*/*/*/target/*
+/*/*/*/*/target/*
+/*/target/*
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+database.properties
+inner.properties
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/*/.settings/*
+/target/
+/*/bin/*
+# jetbrains project files
+/*/.idea/
+.DS_Store
+.springBeans
+*.iml
+*/*.iml
+*/*/*.iml
+*/*/*/*.iml
+*/*/*/*/*.iml
+# eclipse project files
+*.classpath
+*.project
+logback.xml
+.settings/*
+/*/backList
+*/backList
+*/*/backList
+*/*/*/backList
+*/*/*/*/backList
+#idea
+.idea/*
+crm-service-svr/src/main/resources/generatorConfig.xml
+crm-service-svr/src/main/resources/config/mybatis/mybatis-autoGenerator-config.xml
+
+
