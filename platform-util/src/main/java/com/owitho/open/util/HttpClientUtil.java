@@ -13,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -29,7 +31,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpClientUtil {
 
-    private static final long DEFAULT_CONNECT_TIMEOUT = 30000;
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+
+    private static final long DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
 
     public static String postHttpsRequest(String url, String message, String charset) throws Exception {
         return postHttpsRequest(url, message, charset, DEFAULT_CONNECT_TIMEOUT);
@@ -48,8 +52,6 @@ public class HttpClientUtil {
     public static String postHttpsRequest(String url, String message, String charset, long connectTimeout) throws Exception {
         HttpClient httpClient;
         HttpPost httpPost;
-        String result = null;
-
         httpClient = wrapClient(connectTimeout);
 
         StringEntity se = new StringEntity(message, charset);
@@ -61,14 +63,13 @@ public class HttpClientUtil {
         httpPost.setEntity(se);
 
         HttpResponse response = httpClient.execute(httpPost);
-        if (response != null) {
-            HttpEntity resEntity = response.getEntity();
-            if (resEntity != null) {
-                result = EntityUtils.toString(resEntity, charset);
-            }
+        if (response != null && response.getEntity() != null) {
+            String result = EntityUtils.toString(response.getEntity(), charset);
+            return result;
+        } else {
+            logger.error("response null!httpPost:{}", httpPost.toString());
+            throw new RuntimeException("response null!");
         }
-
-        return result;
     }
 
     /**
