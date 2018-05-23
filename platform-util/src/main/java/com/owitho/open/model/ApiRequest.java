@@ -1,5 +1,9 @@
 package com.owitho.open.model;
 
+import com.owitho.open.util.validate.annotation.Max;
+import com.owitho.open.util.validate.annotation.Min;
+import com.owitho.open.util.validate.annotation.NotNull;
+
 /**
  * @author young
  * @date 2018/5/22
@@ -9,27 +13,44 @@ public class ApiRequest<T> {
     /**
      * 第三方平台appId
      */
+    @NotNull
     private String appId;
 
     /**
      * 1000-9999内随机数
      */
+    @NotNull
+    @Max(9999)
+    @Min(1000)
     private int salt;
 
     /**
      * 签名
      */
+    @NotNull
     private String signature;
 
     /**
      * 请求时间
      */
+    @NotNull
     private long utc;
 
     /**
      * 请求参数内容
      */
     private T data;
+
+    public ApiRequest() {
+    }
+
+    public ApiRequest(String appId, int salt, String signature, long utc, T data) {
+        this.appId = appId;
+        this.salt = salt;
+        this.signature = signature;
+        this.utc = utc;
+        this.data = data;
+    }
 
     public String getAppId() {
         return appId;
