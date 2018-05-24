@@ -8,6 +8,9 @@ public class ResponseData {
 
     private String machineCode;
 
+    public ResponseData() {
+    }
+
     public ResponseData(String machineCode) {
         this.machineCode = machineCode;
     }
@@ -18,5 +21,12 @@ public class ResponseData {
 
     public void setMachineCode(String machineCode) {
         this.machineCode = machineCode;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseData{" +
+                "machineCode='" + machineCode + '\'' +
+                '}';
     }
 }

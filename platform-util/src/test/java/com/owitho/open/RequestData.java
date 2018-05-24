@@ -8,6 +8,9 @@ public class RequestData {
 
     private String machineCode;
 
+    public RequestData() {
+    }
+
     public RequestData(String machineCode) {
         this.machineCode = machineCode;
     }
