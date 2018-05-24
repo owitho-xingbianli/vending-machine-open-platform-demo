@@ -36,6 +36,6 @@ public class ApiUtilTest
     public static final String URL = "https://awesome-crm.owitho.intra.im/test/sign";
 
     public void test() throws Exception {
-        ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, URL, TOKEN, new RequestData("XBL001"));
+//        ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, URL, TOKEN, new RequestData("XBL001"));
     }
 }
