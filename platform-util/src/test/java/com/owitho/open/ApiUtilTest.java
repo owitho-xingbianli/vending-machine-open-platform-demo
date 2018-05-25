@@ -6,6 +6,9 @@ import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
 import com.owitho.open.util.OpenApiUtil;
 import junit.framework.TestCase;
+import sun.security.provider.MD5;
+
+import java.util.UUID;
 
 /**
  * Unit test for simple App.
@@ -36,6 +39,7 @@ public class ApiUtilTest
     public static final String URL = "https://open.owitho.intra.im";
 
     public void test() throws Exception {
+
 
     }
 

@@ -12,14 +12,18 @@ import com.owitho.open.util.OpenApiUtil;
  */
 public class Demo {
 
-    public static final String APPID = "3bbdeb4ffa90585a4e87a1aa34e5c644";
+    //测试appId
+    public static final String APPID = "2922b949feae2e8f870414e9442b0611";
+
+    //测试secretKey
+    public static final String SECRETKEY = "a0fdb1a8-5202-4306-b818-67bbbcff1ba0";
 
     public static final String URL = "https://open.owitho.intra.im";
 
     public static void main(String[] args) {
         try {
             //获取token
-            ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", "bc568e9e-159f-40ce-a9c5-3fba2d3482e8");
+            ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", SECRETKEY);
             System.out.println(response);
 
             //远程调用
