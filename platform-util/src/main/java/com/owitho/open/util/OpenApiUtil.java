@@ -71,6 +71,7 @@ public class OpenApiUtil {
         });
         LinkedHashMap dataMap = (LinkedHashMap) response.getData();
         response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
+
         return response;
     }
 
