@@ -39,10 +39,16 @@ public class RequestModel {
     /**
      * 请求参数内容
      */
-    @NotNull
     private String data;
 
     public RequestModel() {
+    }
+
+    public RequestModel(String appId, int salt, String signature, long utc) {
+        this.appId = appId;
+        this.salt = salt;
+        this.signature = signature;
+        this.utc = utc;
     }
 
     public RequestModel(String appId, int salt, String signature, long utc, String data) {

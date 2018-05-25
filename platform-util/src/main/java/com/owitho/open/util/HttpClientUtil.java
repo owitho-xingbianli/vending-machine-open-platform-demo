@@ -1,7 +1,6 @@
 package com.owitho.open.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -37,6 +36,10 @@ public class HttpClientUtil {
 
     public static String postHttpsRequest(String url, String message, String charset) throws Exception {
         return postHttpsRequest(url, message, charset, DEFAULT_CONNECT_TIMEOUT);
+    }
+
+    public static String getHttpsRequest(String url, Map<String, String> params, String charset) throws Exception {
+        return getHttpsRequest(url, params, charset, DEFAULT_CONNECT_TIMEOUT);
     }
 
     /**
@@ -105,20 +108,18 @@ public class HttpClientUtil {
 
         HttpClient httpClient;
         HttpGet httpGet;
-        String result = null;
 
         httpClient = wrapClient(connectTimeout);
         httpGet = new HttpGet(url);
 
         HttpResponse response = httpClient.execute(httpGet);
-        if (response != null) {
-            HttpEntity resEntity = response.getEntity();
-            if (resEntity != null) {
-                result = EntityUtils.toString(resEntity, charset);
-            }
+        if (response != null && response.getEntity() != null) {
+            String result = EntityUtils.toString(response.getEntity(), charset);
+            return result;
+        } else {
+            logger.error("response null!httpGet:{}", httpGet.toString());
+            throw new RuntimeException("response null!");
         }
-
-        return result;
     }
 
     /**

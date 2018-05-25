@@ -3,6 +3,7 @@ package com.owitho.open.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.owitho.open.model.RequestModel;
 import com.owitho.open.model.ResponseModel;
+import com.owitho.open.model.TokenInfo;
 import com.owitho.open.util.validate.function.ValidateHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -148,9 +151,71 @@ public class OpenApiUtil {
      * @param utc
      * @return
      */
-    private static String generateSignature(String appId, String accessToken, String data, int salt, long utc) {
+    public static String generateSignature(String appId, String accessToken, String data, int salt, long utc) {
         StringBuilder sb = new StringBuilder();
         sb.append("appId=").append(appId).append("&accessToken=").append(accessToken).append("&data=").append(data).append("&salt=").append(salt).append("&utc=").append(utc);
+        String beforeMd5 = sb.toString();
+        try {
+            return DigestUtils.md5DigestAsHex(beforeMd5.getBytes(CHARSET_NAME));
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Encoding utf-8失败！beforeMd5:{}", beforeMd5);
+            throw new RuntimeException("Encoding utf-8失败！");
+        }
+    }
+
+    /**
+     * 获取token
+     *
+     * @param appId
+     * @param url
+     * @param secretKey
+     * @return
+     * @throws Exception
+     */
+    public static ResponseModel<TokenInfo> getAccessToken(String appId, String url, String secretKey) throws Exception {
+        RequestModel request = secretKeySignature(appId, secretKey);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("appId", request.getAppId());
+        params.put("salt", String.valueOf(request.getSalt()));
+        params.put("utc", String.valueOf(request.getUtc()));
+        params.put("signature", request.getSignature());
+        String result = HttpClientUtil.getHttpsRequest(url, params, CHARSET_NAME);
+        ResponseModel<TokenInfo> response = JsonHelper.transJsonStringToResp(result, new TypeReference<ResponseModel<TokenInfo>>() {
+        });
+        return response;
+    }
+
+    /**
+     * 拼接secretKey生成md5签名，返回请求体
+     * 用于获取请求token请求
+     *
+     * @param appId
+     * @param secretKey
+     * @return
+     */
+    public static RequestModel secretKeySignature(String appId, String secretKey) {
+        int salt = RANDOM.nextInt(9999 - 1000 + 1) + 1000;
+        long utc = System.currentTimeMillis();
+        //生成签名
+        String signature = generateSecretKeySignature(appId, salt, utc, secretKey);
+
+        RequestModel request = new RequestModel(appId, salt, signature, utc);
+        return request;
+    }
+
+
+    /**
+     * 拼接secretKey生成md5签名，encode失败则返回null
+     *
+     * @param appId
+     * @param salt
+     * @param utc
+     * @param secretKey
+     * @return
+     */
+    public static String generateSecretKeySignature(String appId, int salt, long utc, String secretKey) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("appId=").append(appId).append("&salt=").append(salt).append("&utc=").append(utc).append("&secretKey=").append(secretKey);
         String beforeMd5 = sb.toString();
         try {
             return DigestUtils.md5DigestAsHex(beforeMd5.getBytes(CHARSET_NAME));

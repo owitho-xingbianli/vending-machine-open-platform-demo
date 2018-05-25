@@ -36,19 +36,24 @@ public class ApiUtilTest
 
     public static final String TOKEN = "f23fd74c-fe43-4e38-801b-3c5b9d87b7c1";
 
-    public static final String URL = "https://device-bind.owitho.intra.im/test/sign";
+    public static final String URL = "https://open.owitho.intra.im";
 
     public void test() throws Exception {
-//        ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, URL, TOKEN, new RequestData("XBL001"));
-//
-//        System.out.println(data);
+        ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, "http://device-bind.owitho.intra.im/test/sign", TOKEN, new RequestData("XBL001"));
 
-        ResponseModel responseModel = OpenApiUtil.remoteInvoke(APPID, URL, TOKEN, new RequestData("XBL001"));
-        String response = JsonHelper.transObjToJsonString(responseModel);
-        ResponseModel<ResponseData> responseModel1 = JsonHelper.transJsonStringToResp(response, new TypeReference<ResponseModel<ResponseData>>() {
-        });
-        ResponseData data = responseModel1.getData();
         System.out.println(data);
 
+//        ResponseModel responseModel = OpenApiUtil.remoteInvoke(APPID, URL, TOKEN, new RequestData("XBL001"));
+//        String response = JsonHelper.transObjToJsonString(responseModel);
+//        ResponseModel<ResponseData> responseModel1 = JsonHelper.transJsonStringToResp(response, new TypeReference<ResponseModel<ResponseData>>() {
+//        });
+//        ResponseData data = responseModel1.getData();
+//        System.out.println(data);
+
+    }
+
+    public void testGetAccessToken() throws Exception {
+        ResponseModel response = OpenApiUtil.getAccessToken(APPID, URL+"/getAccessToken", "bc568e9e-159f-40ce-a9c5-3fba2d3482e8");
+        System.out.println(response);
     }
 }
