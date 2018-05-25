@@ -1,4 +1,4 @@
-package com.owitho.open;
+package com.owitho.open.model;
 
 /**
  * @author young

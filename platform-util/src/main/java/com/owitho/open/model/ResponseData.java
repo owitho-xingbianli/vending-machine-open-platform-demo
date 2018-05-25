@@ -1,4 +1,4 @@
-package com.owitho.open;
+package com.owitho.open.model;
 
 /**
  * @author young
@@ -8,11 +8,14 @@ public class ResponseData {
 
     private String machineCode;
 
+    private String machineInfo;
+
     public ResponseData() {
     }
 
-    public ResponseData(String machineCode) {
+    public ResponseData(String machineCode, String machineInfo) {
         this.machineCode = machineCode;
+        this.machineInfo = machineInfo;
     }
 
     public String getMachineCode() {
@@ -23,10 +26,19 @@ public class ResponseData {
         this.machineCode = machineCode;
     }
 
+    public String getMachineInfo() {
+        return machineInfo;
+    }
+
+    public void setMachineInfo(String machineInfo) {
+        this.machineInfo = machineInfo;
+    }
+
     @Override
     public String toString() {
         return "ResponseData{" +
                 "machineCode='" + machineCode + '\'' +
+                ", machineInfo='" + machineInfo + '\'' +
                 '}';
     }
 }

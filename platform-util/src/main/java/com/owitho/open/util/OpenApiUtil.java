@@ -1,20 +1,17 @@
 package com.owitho.open.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.Lists;
 import com.owitho.open.model.RequestModel;
 import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
 import com.owitho.open.util.validate.function.ValidateHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author young
@@ -43,8 +40,8 @@ public class OpenApiUtil {
      * @return
      * @throws Exception
      */
-    public static <T, R> R remoteInvokeReturnData(String appId, String url, String accessToken, T data) throws Exception {
-        ResponseModel<R> response = remoteInvoke(appId, url, accessToken, data);
+    public static <T, R> R remoteInvokeReturnData(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
+        ResponseModel<R> response = remoteInvoke(appId, url, accessToken, data, clazz);
         if (!response.hasSuccess()) {
             logger.error("远程调用返回失败！response:{}", response);
             throw new RuntimeException("远程调用返回失败！");
@@ -63,7 +60,7 @@ public class OpenApiUtil {
      * @param <R>
      * @return
      */
-    public static <T, R> ResponseModel<R> remoteInvoke(String appId, String url, String accessToken, T data) throws Exception {
+    public static <T, R> ResponseModel<R> remoteInvoke(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
         if (Objects.isNull(data)) {
             logger.error("data null!");
             throw new RuntimeException("data null!");
@@ -72,7 +69,8 @@ public class OpenApiUtil {
         String result = HttpClientUtil.postHttpsRequest(url, JsonHelper.transObjToJsonString(request), CHARSET_NAME);
         ResponseModel<R> response = JsonHelper.transJsonStringToResp(result, new TypeReference<ResponseModel<R>>() {
         });
-
+        LinkedHashMap dataMap = (LinkedHashMap) response.getData();
+        response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
         return response;
     }
 
@@ -123,8 +121,17 @@ public class OpenApiUtil {
      * @return
      */
     public static <R> R checkSignature(RequestModel request, String accessToken, Class<? extends R> clazz, boolean checkUtc, long timeOut) {
-        ValidateHelper.validate(request);
+        Boolean isSuccess = checkSignature(request, Lists.newArrayList(accessToken), checkUtc, timeOut);
+        if (!isSuccess) {
+            logger.error("验签失败！request:{}", request);
+            throw new RuntimeException("验签失败！");
+        }
 
+        return JsonHelper.transJsonStringToObj(request.getData(), clazz);
+    }
+
+    public static boolean checkSignature(RequestModel request, List<String> accessTokens, boolean checkUtc, long timeOut) {
+        ValidateHelper.validate(request);
         if (checkUtc) {
             long currentTime = System.currentTimeMillis();
             if (currentTime - request.getUtc() > timeOut) {
@@ -132,13 +139,12 @@ public class OpenApiUtil {
                 throw new RuntimeException("utc超时！");
             }
         }
-
-        String signature = generateSignature(request.getAppId(), accessToken, request.getData(), request.getSalt(), request.getUtc());
-        if (!StringUtils.equals(signature, request.getSignature())) {
-            logger.error("验签失败！request:{}", request);
-            throw new RuntimeException("验签失败！");
+        List<String> signatures = new ArrayList<>();
+        for (String accessToken : accessTokens) {
+            String signature = generateSignature(request.getAppId(), accessToken, request.getData(), request.getSalt(), request.getUtc());
+            signatures.add(signature);
         }
-        return JsonHelper.transJsonStringToObj(request.getData(), clazz);
+        return signatures.contains(request.getSignature());
     }
 
     /**
