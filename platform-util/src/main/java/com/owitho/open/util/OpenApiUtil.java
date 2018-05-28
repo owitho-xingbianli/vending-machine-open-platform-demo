@@ -61,17 +61,32 @@ public class OpenApiUtil {
      * @return
      */
     public static <T, R> ResponseModel<R> remoteInvoke(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
+        ResponseModel response = remoteInvoke(appId, url, accessToken, data);
+
+        LinkedHashMap dataMap = (LinkedHashMap) response.getData();
+        response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
+
+        return response;
+    }
+
+    /**
+     * 调用远程接口
+     * 自动生成签名，填充请求体，发起HttpPost请求
+     * 返回HttpResponse的result
+     *
+     * @param appId
+     * @param data
+     * @param <T>
+     * @return
+     */
+    public static <T> ResponseModel remoteInvoke(String appId, String url, String accessToken, T data) throws Exception {
         if (Objects.isNull(data)) {
             logger.error("data null!");
             throw new RuntimeException("data null!");
         }
         RequestModel request = signature(appId, accessToken, data);
         String result = HttpClientUtil.postHttpsRequest(url, JsonHelper.transObjToJsonString(request), CHARSET_NAME);
-        ResponseModel<R> response = JsonHelper.transJsonStringToResp(result, new TypeReference<ResponseModel<R>>() {
-        });
-        LinkedHashMap dataMap = (LinkedHashMap) response.getData();
-        response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
-
+        ResponseModel response = JsonHelper.transJsonStringToObj(result, ResponseModel.class);
         return response;
     }
 

@@ -5,6 +5,7 @@ import com.owitho.open.model.ResponseData;
 import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
 import com.owitho.open.util.OpenApiUtil;
+import org.springframework.util.DigestUtils;
 
 /**
  * @author young
@@ -29,6 +30,7 @@ public class Demo {
             //远程调用
             ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, URL + "/testSign", response.getData().getAccessToken(), new RequestData("XBL001"), ResponseData.class);
             System.out.println(data);
+
 
         } catch (Exception e) {
             e.printStackTrace();

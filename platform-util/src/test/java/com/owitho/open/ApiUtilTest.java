@@ -6,6 +6,7 @@ import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
 import com.owitho.open.util.OpenApiUtil;
 import junit.framework.TestCase;
+import org.springframework.util.DigestUtils;
 import sun.security.provider.MD5;
 
 import java.util.UUID;
@@ -36,21 +37,25 @@ public class ApiUtilTest
      */
     public static final String APPID = "2922b949feae2e8f870414e9442b0611";
 
+    public static final String SECRETKEY = "a0fdb1a8-5202-4306-b818-67bbbcff1ba0";
+
     public static final String URL = "https://open.owitho.intra.im";
 
     public void test() throws Exception {
 
-
+        String after = DigestUtils.md5DigestAsHex("234sudjd833933".getBytes("UTF-8"));
+        System.out.println(after);
     }
 
     public void testGetAccessToken() throws Exception {
-        ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", "a0fdb1a8-5202-4306-b818-67bbbcff1ba0");
+        ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", SECRETKEY);
         System.out.println(response);
     }
 
     public void testRemoteInvoke() throws Exception {
-        ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", "a0fdb1a8-5202-4306-b818-67bbbcff1ba0");
+        ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", SECRETKEY);
         ResponseData data = OpenApiUtil.remoteInvokeReturnData(APPID, URL + "/testSign", response.getData().getAccessToken(), new RequestData("XBL001"), ResponseData.class);
         System.out.println(data);
     }
+
 }
