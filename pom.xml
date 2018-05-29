@@ -137,16 +137,4 @@
 
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>localhost-releases</name>
-            <url>http://artifactory.intra.im/artifactory/libs-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>localhost-snapshots</name>
-            <url>http://artifactory.intra.im/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
