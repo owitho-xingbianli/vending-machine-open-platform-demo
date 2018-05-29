@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.owitho.open.model.RequestModel;
 import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
+import com.owitho.open.model.TokenRequest;
 import com.owitho.open.util.validate.function.ValidateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class OpenApiUtil {
     }
 
     /**
-     * 调用远程接口
+     * 调用远程接口（用于data为空的返回）
      * 自动生成签名，填充请求体，发起HttpPost请求
      * 返回HttpResponse的result
      *
@@ -80,11 +81,26 @@ public class OpenApiUtil {
      * @return
      */
     public static <T> ResponseModel remoteInvoke(String appId, String url, String accessToken, T data) throws Exception {
+        return remoteInvoke(appId, url, Lists.newArrayList(accessToken), data);
+    }
+
+    /**
+     * 调用远程接口(多个可用token)
+     *
+     * @param appId
+     * @param url
+     * @param accessTokens
+     * @param data
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> ResponseModel remoteInvoke(String appId, String url, List<String> accessTokens, T data) throws Exception {
         if (Objects.isNull(data)) {
             logger.error("data null!");
             throw new RuntimeException("data null!");
         }
-        RequestModel request = signature(appId, accessToken, data);
+        RequestModel request = signature(appId, accessTokens, data);
         String result = HttpClientUtil.postHttpsRequest(url, JsonHelper.transObjToJsonString(request), CHARSET_NAME);
         ResponseModel response = JsonHelper.transJsonStringToObj(result, ResponseModel.class);
         return response;
@@ -94,19 +110,20 @@ public class OpenApiUtil {
      * 生成md5签名，返回请求体
      *
      * @param appId
-     * @param accessToken
+     * @param accessTokens
      * @param data
      * @param <T>
      * @return
      */
-    public static <T> RequestModel signature(String appId, String accessToken, T data) {
+    public static <T> RequestModel signature(String appId, List<String> accessTokens, T data) {
         String dataJson = JsonHelper.transObjToJsonString(data);
         int salt = RANDOM.nextInt(9999 - 1000 + 1) + 1000;
         long utc = System.currentTimeMillis();
         //生成签名
-        String signature = generateSignature(appId, accessToken, dataJson, salt, utc);
 
-        RequestModel request = new RequestModel(appId, salt, signature, utc, dataJson);
+        List<String> signatures = generateSignature(appId, accessTokens, dataJson, salt, utc);
+
+        RequestModel request = new RequestModel(appId, salt, signatures, utc, dataJson);
         return request;
     }
 
@@ -125,7 +142,7 @@ public class OpenApiUtil {
     }
 
     /**
-     * 校验请求签名
+     * 校验请求签名(如果没有有效的accessToken，使用accessToken = secretKey)
      * 返回data对应的clazz
      *
      * @param request
@@ -155,12 +172,22 @@ public class OpenApiUtil {
                 throw new RuntimeException("utc超时！");
             }
         }
+        List<String> signatures = generateSignature(request.getAppId(), accessTokens, request.getData(), request.getSalt(), request.getUtc());
+        for (String signature : request.getSignatures()) {
+            if (signatures.contains(signature)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static List<String> generateSignature(String appId, List<String> accessTokens, String data, int salt, long utc) {
         List<String> signatures = new ArrayList<>();
         for (String accessToken : accessTokens) {
-            String signature = generateSignature(request.getAppId(), accessToken, request.getData(), request.getSalt(), request.getUtc());
+            String signature = generateSignature(appId, accessToken, data, salt, utc);
             signatures.add(signature);
         }
-        return signatures.contains(request.getSignature());
+        return signatures;
     }
 
     /**
@@ -195,7 +222,7 @@ public class OpenApiUtil {
      * @throws Exception
      */
     public static ResponseModel<TokenInfo> getAccessToken(String appId, String url, String secretKey) throws Exception {
-        RequestModel request = secretKeySignature(appId, secretKey);
+        TokenRequest request = secretKeySignature(appId, secretKey);
         Map<String, String> params = new HashMap<String, String>();
         params.put("appId", request.getAppId());
         params.put("salt", String.valueOf(request.getSalt()));
@@ -215,13 +242,13 @@ public class OpenApiUtil {
      * @param secretKey
      * @return
      */
-    public static RequestModel secretKeySignature(String appId, String secretKey) {
+    public static TokenRequest secretKeySignature(String appId, String secretKey) {
         int salt = RANDOM.nextInt(9999 - 1000 + 1) + 1000;
         long utc = System.currentTimeMillis();
         //生成签名
         String signature = generateSecretKeySignature(appId, salt, utc, secretKey);
 
-        RequestModel request = new RequestModel(appId, salt, signature, utc);
+        TokenRequest request = new TokenRequest(appId, salt, signature, utc);
         return request;
     }
 

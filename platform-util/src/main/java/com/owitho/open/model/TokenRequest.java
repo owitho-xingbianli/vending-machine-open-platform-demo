@@ -4,13 +4,11 @@ import com.owitho.open.util.validate.annotation.Max;
 import com.owitho.open.util.validate.annotation.Min;
 import com.owitho.open.util.validate.annotation.NotNull;
 
-import java.util.List;
-
 /**
  * @author young
  * @date 2018/5/23
  */
-public class RequestModel {
+public class TokenRequest {
 
     /**
      * 第三方平台appId
@@ -30,7 +28,7 @@ public class RequestModel {
      * 签名
      */
     @NotNull
-    private List<String> signatures;
+    private String signature;
 
     /**
      * 请求时间
@@ -38,27 +36,15 @@ public class RequestModel {
     @NotNull
     private long utc;
 
-    /**
-     * 请求参数内容
-     */
-    private String data;
 
-    public RequestModel() {
+    public TokenRequest() {
     }
 
-    public RequestModel(String appId, int salt, List<String> signatures, long utc) {
+    public TokenRequest(String appId, int salt, String signature, long utc) {
         this.appId = appId;
         this.salt = salt;
-        this.signatures = signatures;
+        this.signature = signature;
         this.utc = utc;
-    }
-
-    public RequestModel(String appId, int salt, List<String> signatures, long utc, String data) {
-        this.appId = appId;
-        this.salt = salt;
-        this.signatures = signatures;
-        this.utc = utc;
-        this.data = data;
     }
 
     public String getAppId() {
@@ -77,12 +63,12 @@ public class RequestModel {
         this.salt = salt;
     }
 
-    public List<String> getSignatures() {
-        return signatures;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setSignatures(List<String> signatures) {
-        this.signatures = signatures;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 
     public long getUtc() {
@@ -93,22 +79,13 @@ public class RequestModel {
         this.utc = utc;
     }
 
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
-    }
-
     @Override
     public String toString() {
-        return "RequestModel{" +
+        return "TokenRequest{" +
                 "appId='" + appId + '\'' +
                 ", salt=" + salt +
-                ", signatures=" + signatures +
+                ", signature='" + signature + '\'' +
                 ", utc=" + utc +
-                ", data='" + data + '\'' +
                 '}';
     }
 }

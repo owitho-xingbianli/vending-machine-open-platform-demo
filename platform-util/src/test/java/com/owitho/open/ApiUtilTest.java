@@ -35,15 +35,16 @@ public class ApiUtilTest
     /**
      * Rigourous Test :-)
      */
-    public static final String APPID = "2922b949feae2e8f870414e9442b0611";
+    public static final String APPID = "bluesky";
 
-    public static final String SECRETKEY = "a0fdb1a8-5202-4306-b818-67bbbcff1ba0";
+    public static final String SECRETKEY = "sss";
 
     public static final String URL = "https://open.owitho.intra.im";
 
     public void test() throws Exception {
 
-        String after = DigestUtils.md5DigestAsHex("234sudjd833933".getBytes("UTF-8"));
+        String before = "appId%3Dbluesky%26salt%3D1817%26utc%3D1527577804587%26secretKey%3Dsss";
+        String after = DigestUtils.md5DigestAsHex(before.getBytes("UTF-8"));
         System.out.println(after);
     }
 
