@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.owitho.open.model.RequestModel;
 import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
+import com.owitho.open.model.TokenRequest;
 import com.owitho.open.util.validate.function.ValidateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class OpenApiUtil {
      * @return
      */
     public static <T> ResponseModel remoteInvoke(String appId, String url, String accessToken, T data) throws Exception {
-        return remoteInvoke(appId,url,Lists.newArrayList(accessToken),d)
+        return remoteInvoke(appId, url, Lists.newArrayList(accessToken), data);
     }
 
     /**
@@ -141,7 +142,7 @@ public class OpenApiUtil {
     }
 
     /**
-     * 校验请求签名
+     * 校验请求签名(如果没有有效的accessToken，使用accessToken = secretKey)
      * 返回data对应的clazz
      *
      * @param request
@@ -221,12 +222,12 @@ public class OpenApiUtil {
      * @throws Exception
      */
     public static ResponseModel<TokenInfo> getAccessToken(String appId, String url, String secretKey) throws Exception {
-        RequestModel request = secretKeySignature(appId, secretKey);
+        TokenRequest request = secretKeySignature(appId, secretKey);
         Map<String, String> params = new HashMap<String, String>();
         params.put("appId", request.getAppId());
         params.put("salt", String.valueOf(request.getSalt()));
         params.put("utc", String.valueOf(request.getUtc()));
-        params.put("signatures", JsonHelper.transObjToJsonString(request.getSignatures()));
+        params.put("signature", request.getSignature());
         String result = HttpClientUtil.getHttpsRequest(url, params, CHARSET_NAME);
         ResponseModel<TokenInfo> response = JsonHelper.transJsonStringToResp(result, new TypeReference<ResponseModel<TokenInfo>>() {
         });
@@ -241,13 +242,13 @@ public class OpenApiUtil {
      * @param secretKey
      * @return
      */
-    public static RequestModel secretKeySignature(String appId, String secretKey) {
+    public static TokenRequest secretKeySignature(String appId, String secretKey) {
         int salt = RANDOM.nextInt(9999 - 1000 + 1) + 1000;
         long utc = System.currentTimeMillis();
         //生成签名
         String signature = generateSecretKeySignature(appId, salt, utc, secretKey);
 
-        RequestModel request = new RequestModel(appId, salt, Lists.newArrayList(signature), utc);
+        TokenRequest request = new TokenRequest(appId, salt, signature, utc);
         return request;
     }
 
