@@ -96,7 +96,7 @@ public class OpenApiUtil {
      * @throws Exception
      */
     public static <T> ResponseModel remoteInvoke(String appId, String url, List<String> accessTokens, T data) throws Exception {
-        if (Objects.isNull(data)) {
+        if (data == null) {
             logger.error("data null!");
             throw new RuntimeException("data null!");
         }
