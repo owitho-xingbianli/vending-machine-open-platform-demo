@@ -5,7 +5,7 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>autoMachine_v0.1.2</title>
+<title>autoMachine_v0.1.5</title>
 
 
 <style type="text/css">
@@ -359,6 +359,24 @@ kbd {
 <td>更新了auth接口，增加utc字段</td>
 <td>钟杨杨</td>
 </tr>
+<tr>
+<td>2018年5月23日</td>
+<td>v0.1.3</td>
+<td>在陈列推送以及查询机器详情的接口中添加了行&amp;列</td>
+<td>赵亚东</td>
+</tr>
+<tr>
+<td>2018年5月23日</td>
+<td>v0.1.4</td>
+<td>添加了单machine多货柜支持, 添加了订单接口中规划货道</td>
+<td>罗迪</td>
+</tr>
+<tr>
+<td>2018年5月30日</td>
+<td>v0.1.5</td>
+<td>验签支持多签名，删除urlEncode,明确业务接口入参格式</td>
+<td>钟杨杨</td>
+</tr>
 </tbody>
 </table>
 
@@ -379,10 +397,9 @@ kbd {
 <h3 id="toc_4">第三方平台API调用所需的accessToken的使用及生成方式说明:</h3>
 
 <div><pre><code class="language-none">    1、为了保密secretKey，第三方需要⼀一个accessToken获取和刷新的中控服务器。⽽而其他业务逻辑服务器所使⽤的accessToken均来⾃于该中控服务器，不应该各⾃去刷新，否则会造成accessToken覆盖而影响业务;
-    2、目前accessToken的有效期通过返回的expire_time来传达，目前是24⼩时。中控服务器需要根据这个有效时间提前去刷新新accessToken。在刷新过程中，中控服务器对外输出的依然是老
-accessToken，此时开放平台后台会保证在刷新短时间内，新老accessToken都可用，这保证了第三⽅业务的平滑过渡;
+    2、目前accessToken的有效期通过返回的expire_time来传达，目前是24⼩时。中控服务器需要根据这个有效时间提前去刷新新accessToken。在刷新过程中，中控服务器对外输出的依然是老accessToken，此时开放平台后台会保证在刷新短时间内，新老accessToken都可用，这保证了第三⽅业务的平滑过渡;
     3、accessToken的有效时间可能会在未来有调整，所以中控服务器不仅需要内部定时主动刷新，还需要提供被动刷新accessToken的接口，这样便于业务服务器在API调用获知accessToken已超时的情况下，可以触发accessToken的刷新流程。
-    4、第三方平台可以使用appId和secretKey调⽤ 获取accessToken接⼝ 来获取accessToken</code></pre></div>
+    4、第三方平台可以使用appId和secretKey调⽤获取accessToken接⼝来获取accessToken</code></pre></div>
 
 <h3 id="toc_5">1. 获取accessToken接口</h3>
 
@@ -446,11 +463,7 @@ accessToken，此时开放平台后台会保证在刷新短时间内，新老acc
 
 <div><pre><code class="language-none">appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;salt=2345&amp;utc=1526697000000&amp;secretKey=fresh</code></pre></div>
 
-<p>(2) 将所得到的字符串用UTF-8进行urlEncode</p>
-
-<div><pre><code class="language-none">appId%4cdbc040657a4847b2667e31d9e2c3d9%26salt%3D2345%26utc%3D1526697000000%26secretKey%3Dfresh</code></pre></div>
-
-<p>(3) 用(2)中字符串计算MD5，得到签名</p>
+<p>(2) 用(1)中字符串计算MD5，得到签名</p>
 
 <div><pre><code class="language-none">9b7d70ab7f45d1256948811b91660c30</code></pre></div>
 
@@ -529,10 +542,12 @@ accessToken，此时开放平台后台会保证在刷新短时间内，新老acc
 
 <div><pre><code class="language-none">{
     &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
-    &quot;data&quot;:&quot;%7B%22name%22%3A%22jack%22%2C%22age%22%3A23%2C%22country%22%3A%22USA%22%7D&quot;,
+    &quot;data&quot;:&quot;{\&quot;name\&quot;:\&quot;张三\&quot;,\&quot;age\&quot;:23,\&quot;country\&quot;:\&quot;中国\&quot;}&quot;,
     &quot;salt&quot;:1234,
     &quot;utc&quot;:1526697000000,
-    &quot;signature&quot;:&quot;5fff5b80aeeef36e1c066b1004ec0262&quot;
+    &quot;signatures&quot;:[
+        &quot;5fff5b80aeeef36e1c066b1004ec0262&quot;
+    ]
 }</code></pre></div>
 
 <div><pre><code class="language-none">salt为1000-9999随机数
@@ -540,51 +555,71 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 
 <h4 id="toc_11">签名计算规则:</h4>
 
-<h5 id="toc_12">(1) 首先获取请求的json字符串</h5>
+<h5 id="toc_12">(1) 首先获取请求内容data对应的json字符串</h5>
 
 <div><pre><code class="language-none">{&quot;name&quot;:&quot;张三&quot;,&quot;age&quot;:23,&quot;country&quot;:&quot;中国&quot;}</code></pre></div>
 
-<h5 id="toc_13">(2) 将上述字符串用UTF-8进行urlEncode，作为data的value值</h5>
+<h5 id="toc_13">(2) appId, accessToken，以及上述字符串data、salt、utc用&amp;拼接起来</h5>
 
-<div><pre><code class="language-none">%7B%22name%22%3A%22%E5%BC%A0%E4%B8%89%22%2C%22age%22%3A23%2C%22country%22%3A%22%E4%B8%AD%E5%9B%BD%22%7D</code></pre></div>
+<div><pre><code class="language-none">appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;accessToken=9e7d0604-cb0d-4c7c-a09d-cf365ce6936c&amp;data={&quot;name&quot;:&quot;张三&quot;,&quot;age&quot;:23,&quot;country&quot;:&quot;中国&quot;}&amp;salt=1234%26utc%3D1526697000000</code></pre></div>
 
-<h5 id="toc_14">(3) appId, accessToken，以及上述字符串data和salt用&amp;拼接起来</h5>
-
-<div><pre><code class="language-none">appId=4cdbc040657a4847b2667e31d9e2c3d9&amp;accessToken=9e7d0604-cb0d-4c7c-a09d-cf365ce6936c&amp;data=%7B%22name%22%3A%22%E5%BC%A0%E4%B8%89%22%2C%22age%22%3A23%2C%22country%22%3A%22%E4%B8%AD%E5%9B%BD%22%7D&amp;salt=1234%26utc%3D1526697000000</code></pre></div>
-
-<h5 id="toc_15">(4) 用（3）中字符串计算MD5，得到签名</h5>
+<h5 id="toc_14">(3) 用（2）中字符串计算MD5，得到签名</h5>
 
 <div><pre><code class="language-none">5fff5b80aeeef36e1c066b1004ec0262</code></pre></div>
 
-<h1 id="toc_16">业务流程</h1>
+<h1 id="toc_15">业务流程</h1>
 
 <p><img src="imags/%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="业务流程图"></p>
 
-<h1 id="toc_17">业务接口</h1>
+<h1 id="toc_16">业务接口</h1>
 
-<div><pre><code class="language-none">以下所有业务接口，data中数据在请求中必须转为不带空格和换行符的字符串，然后用UTF-8进行urlEncode</code></pre></div>
+<div><pre><code class="language-none">以下所有业务接口，data中数据在请求中必须转为不带空格和换行符的字符串</code></pre></div>
 
-<h2 id="toc_18">1. 增量同步第三方商品信息接口</h2>
+<h2 id="toc_17">1. 增量同步第三方商品信息接口</h2>
 
 <div><pre><code class="language-none">POST  ${owitho.url}/sku/sync</code></pre></div>
 
-<h3 id="toc_19">描述</h3>
+<h3 id="toc_18">描述</h3>
 
 <div><pre><code class="language-none">当第三方接入owitho平台时, 需要第三方的商品信息,包括(商品编号,商品名称,商品图片等),以增量方式同步第三方商品信息到owitho平台</code></pre></div>
 
-<h3 id="toc_20">接口说明</h3>
+<h3 id="toc_19">接口说明</h3>
 
 <div><pre><code class="language-none">请保证商品编号的唯一性,当商品编号重复同步时我们的策略是覆盖</code></pre></div>
 
-<h3 id="toc_21">API版本</h3>
+<h3 id="toc_20">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_22">调用方式</h3>
+<h3 id="toc_21">调用方式</h3>
 
 <div><pre><code class="language-none">POST</code></pre></div>
 
-<h3 id="toc_23">请求参数</h3>
+<h3 id="toc_22">请求参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>skuList</td>
+<td>ArrayList&lt;Sku&gt;</td>
+<td>Y</td>
+<td>-</td>
+<td>商品列表</td>
+<td>Sku数据结构见下表</td>
+</tr>
+</tbody>
+</table>
 
 <table>
 <thead>
@@ -658,14 +693,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_24">请求参数示例</h3>
-
 <div><pre><code class="language-none">{
-    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
-    &quot;salt&quot;:1234,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
-    &quot;utc&quot;:1526697000000,
-    &quot;data&quot;:{
         skuList:[
             {
                  &quot;skuCode&quot;:&quot;200000001&quot;,
@@ -686,11 +714,21 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
                  &quot;skuPic&quot;:&quot;https://img.xingbianli.cn/%08cola.png&quot;
             }
         ]
-    }
-}
-</code></pre></div>
+}</code></pre></div>
 
-<h3 id="toc_25">返回参数说明</h3>
+<h3 id="toc_23">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;2922b949feae2e8f870414e9442b0611&quot;,
+    &quot;salt&quot;:2121,
+    &quot;signatures&quot;:[
+        &quot;bf36b8bd69ca354a0985f59c415fc719&quot;
+    ],
+    &quot;utc&quot;:1527660769983,
+    &quot;data&quot;:&quot;{\&quot;skuList\&quot;:[{\&quot;skuCode\&quot;:\&quot;1235324\&quot;,\&quot;skuName\&quot;:\&quot;可乐\&quot;,\&quot;skuUnit\&quot;:\&quot;罐\&quot;,\&quot;skuSpec\&quot;:\&quot;250ml\&quot;,\&quot;originalPrice\&quot;:10.5,\&quot;purchasePrice\&quot;:9.5,\&quot;skuPic\&quot;:\&quot;https://pic.png\&quot;},{\&quot;skuList\&quot;:[{\&quot;skuCode\&quot;:\&quot;1235324\&quot;,\&quot;skuName\&quot;:\&quot;可乐\&quot;,\&quot;skuUnit\&quot;:\&quot;罐\&quot;,\&quot;skuSpec\&quot;:\&quot;250ml\&quot;,\&quot;originalPrice\&quot;:10.5,\&quot;purchasePrice\&quot;:9.5,\&quot;skuPic\&quot;:\&quot;https://pic.png\&quot;}]}&quot;
+}</code></pre></div>
+
+<h3 id="toc_24">返回参数说明</h3>
 
 <table>
 <thead>
@@ -724,14 +762,14 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_26">返回结果示例</h3>
+<h3 id="toc_25">返回结果示例</h3>
 
 <p>成功返回值</p>
 
 <div><pre><code class="language-none">{
     &quot;code&quot;:&quot;200&quot;,
     &quot;msg&quot;:&quot;success&quot;,
-    &quot;data&quot;:{}
+    &quot;data&quot;:&quot;&quot;
 }</code></pre></div>
 
 <p>失败返回值 <a href="#%E9%80%9A%E7%94%A8%E8%BF%94%E5%9B%9E%E7%A0%81">详见附录</a></p>
@@ -739,33 +777,33 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <div><pre><code class="language-none">{
     &quot;code&quot;:&quot;40000&quot;,
     &quot;msg&quot;:&quot;请求失败&quot;,
-    &quot;data&quot;:{}
+    &quot;data&quot;:&quot;&quot;
 }</code></pre></div>
 
-<h2 id="toc_27">2. 第三方补货时主动同步当前货架的陈列</h2>
+<h2 id="toc_26">2. 第三方补货时主动同步当前货架的陈列</h2>
 
 <div><pre><code class="language-none">POST  ${owitho.url}/machine/sync
 </code></pre></div>
 
-<h3 id="toc_28">描述</h3>
+<h3 id="toc_27">描述</h3>
 
 <div><pre><code class="language-none">第三方补货人员在补货时触发,同步当前货架的陈列给owitho平台</code></pre></div>
 
-<h3 id="toc_29">接口说明</h3>
+<h3 id="toc_28">接口说明</h3>
 
 <div><pre><code class="language-none">当存在合并货道时,开放平台不关心具体的合并逻辑,第三方只需要合并后的货道列表同步给开放平台即可.
 示例:当前货道为1,2,3,4,5,6 此时将2,3货道合并后,同步的货道列表为1,2(合并后货道唯一标识),4,5,6
 开放平台不关心2是货道2还是货道3</code></pre></div>
 
-<h3 id="toc_30">API版本</h3>
+<h3 id="toc_29">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_31">调用方式</h3>
+<h3 id="toc_30">调用方式</h3>
 
 <div><pre><code class="language-none">POST</code></pre></div>
 
-<h3 id="toc_32">请求参数</h3>
+<h3 id="toc_31">请求参数</h3>
 
 <table>
 <thead>
@@ -787,6 +825,13 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td></td>
 </tr>
 <tr>
+<td>containerCode</td>
+<td>String</td>
+<td>N</td>
+<td>货柜号</td>
+<td></td>
+</tr>
+<tr>
 <td>machineStatus</td>
 <td>Int</td>
 <td>Y</td>
@@ -795,16 +840,45 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tr>
 <tr>
 <td>slotList</td>
-<td>Array</td>
+<td>ArrayList&lt;Slot&gt;</td>
 <td>Y</td>
 <td>货道陈列详情</td>
-<td></td>
+<td>Slot数据结构见下表</td>
 </tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
 <tr>
 <td>slotNum</td>
 <td>String</td>
 <td>Y</td>
 <td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>row</td>
+<td>Int</td>
+<td>Y</td>
+<td>行</td>
+<td></td>
+</tr>
+<tr>
+<td>col</td>
+<td>Int</td>
+<td>Y</td>
+<td>列</td>
 <td></td>
 </tr>
 <tr>
@@ -866,46 +940,54 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h2 id="toc_33">请求参数示例</h2>
+<div><pre><code class="language-none">{
+    &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,
+    &quot;containerCode&quot;:&quot;abc123&quot;,
+    &quot;machineStatus&quot;:10,
+    &quot;slotList&quot;:[
+        {
+            &quot;slotNum&quot;:&quot;01&quot;,
+            &quot;row&quot;:1,
+            &quot;col&quot;:1,
+            &quot;skuCode&quot;:&quot;0000001&quot;,
+            &quot;skuName&quot;:&quot;600ml可口可乐&quot;,
+            &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;,
+            &quot;maxInventory&quot;:10,
+            &quot;currentInventory&quot;:3,
+            &quot;slotStatus&quot;:0
+        },
+        {
+            &quot;slotNum&quot;:&quot;02&quot;,
+            &quot;row&quot;:1,
+            &quot;col&quot;:2,
+            &quot;skuCode&quot;:&quot;0000002&quot;,
+            &quot;skuName&quot;:&quot;原味乐事薯片&quot;,
+            &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;,
+            &quot;maxInventory&quot;:10,
+            &quot;currentInventory&quot;:5,
+            &quot;slotStatus&quot;:0
+        }
+    ]
+}</code></pre></div>
+
+<h2 id="toc_32">请求参数示例</h2>
 
 <div><pre><code class="language-none">{
     &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
     &quot;salt&quot;:1234,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;signature&quot;:[
+        &quot;5fff5b80aeeef36e1c066b1004ec0262&quot;
+    ],
     &quot;utc&quot;:1526697000000,
-    &quot;data&quot;:{
-          &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,   
-          &quot;machineStatus&quot;:10,    
-          &quot;slotList&quot;: 
-             [
-                 {
-                     &quot;slotNum&quot;:&quot;01&quot;,    
-                     &quot;skuCode&quot;:0000001, 
-                     &quot;skuName&quot;:&quot;600ml可口可乐&quot;,   
-                     &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,   
-                     &quot;originalPrice&quot;:&quot;10.50&quot;, 
-                     &quot;actualPrice&quot;:&quot;10.50&quot;,       
-                     &quot;maxInventory&quot;:10,   
-                     &quot;currentInventory&quot;:3,    
-                     &quot;slotStatus&quot;:0               
-                 },
-                 {
-                     &quot;slotNum&quot;:&quot;02&quot;,   
-                     &quot;skuCode&quot;:&quot;0000002&quot;, 
-                     &quot;skuName&quot;:&quot;原味乐事薯片&quot;,   
-                     &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,   
-                     &quot;originalPrice&quot;:&quot;10.50&quot;, 
-                     &quot;actualPrice&quot;:&quot;10.50&quot;,           
-                     &quot;maxInventory&quot;:10,   
-                     &quot;currentInventory&quot;:5, 
-                     &quot;slotStatus&quot;:0   
-                 }
-             ] 
-    }
+    &quot;data&quot;:&quot;{\&quot;machineCode\&quot;:\&quot;XHJSHnull1990000000108714\&quot;,\&quot;containerCode\&quot;:\&quot;abc123\&quot;,\&quot;machineStatus\&quot;:10,\&quot;slotList\&quot;:[{\&quot;slotNum\&quot;:\&quot;01\&quot;,\&quot;row\&quot;:1,\&quot;col\&quot;:1,\&quot;skuCode\&quot;:\&quot;0000001\&quot;,\&quot;skuName\&quot;:\&quot;600ml可口可乐\&quot;,\&quot;skuDesc\&quot;:\&quot;600ml可口可乐\&quot;,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;,\&quot;maxInventory\&quot;:10,\&quot;currentInventory\&quot;:3,\&quot;slotStatus\&quot;:0},{\&quot;slotNum\&quot;:\&quot;02\&quot;,\&quot;row\&quot;:1,\&quot;col\&quot;:2,\&quot;skuCode\&quot;:\&quot;0000002\&quot;,\&quot;skuName\&quot;:\&quot;原味乐事薯片\&quot;,\&quot;skuDesc\&quot;:\&quot;原味乐事薯片\&quot;,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;,\&quot;maxInventory\&quot;:10,\&quot;currentInventory\&quot;:5,\&quot;slotStatus\&quot;:0}]}&quot;
 }
 </code></pre></div>
 
-<h3 id="toc_34">返回参数</h3>
+<h3 id="toc_33">返回参数</h3>
 
 <table>
 <thead>
@@ -939,27 +1021,25 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_35">返回参数示例</h3>
+<h3 id="toc_34">返回参数示例</h3>
 
 <div><pre><code class="language-none">{
     &quot;code&quot;:&quot;200&quot;,
     &quot;msg&quot;:&quot;success&quot;,
-    &quot;data&quot;&quot;:{
-    }   
-}
-</code></pre></div>
+    &quot;data&quot;:&quot;&quot;
+}</code></pre></div>
 
-<h2 id="toc_36">3. 根据机器code查询商品陈列、库存以及设备状态（第三方实现）</h2>
+<h2 id="toc_35">3. 根据机器code查询商品陈列、库存以及设备状态（第三方实现）</h2>
 
 <div><pre><code class="language-none">POST  ${third.url}/machine/query
 </code></pre></div>
 
-<h3 id="toc_37">描述</h3>
+<h3 id="toc_36">描述</h3>
 
 <div><pre><code class="language-none">
 根据第三方机器code实时查询该机器的商品陈列、库存以及设备状态</code></pre></div>
 
-<h3 id="toc_38">接口说明</h3>
+<h3 id="toc_37">接口说明</h3>
 
 <div><pre><code class="language-none">${third.url}为第三方平台的url，第三方需要在注册的时候提供
 
@@ -967,15 +1047,15 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 示例:当前货道为1,2,3,4,5,6 此时将2,3货道合并后,同步的货道列表为1,2(合并后货道唯一标识),4,5,6
 开放平台不关心2是货道2还是货道3</code></pre></div>
 
-<h3 id="toc_39">API版本</h3>
+<h3 id="toc_38">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_40">调用方式</h3>
+<h3 id="toc_39">调用方式</h3>
 
 <div><pre><code class="language-none">POST</code></pre></div>
 
-<h3 id="toc_41">返回参数</h3>
+<h3 id="toc_40">请求参数</h3>
 
 <table>
 <thead>
@@ -999,20 +1079,24 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h2 id="toc_42">请求参数示例</h2>
+<div><pre><code class="language-none">{
+    &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;
+}</code></pre></div>
+
+<h2 id="toc_41">请求参数示例</h2>
 
 <div><pre><code class="language-none">{
     &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
     &quot;salt&quot;:1234,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;signatures&quot;:[
+        &quot;bf36b8bd69ca354a0985f59c415fc719&quot;
+    ],
     &quot;utc&quot;:1526697000000,
-    &quot;data&quot;:{
-         &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;
-    }
+    &quot;data&quot;:&quot;{\&quot;machineCode\&quot;:\&quot;XHJSHnull1990000000108714\&quot;}&quot;
 }
 </code></pre></div>
 
-<h3 id="toc_43">返回参数</h3>
+<h3 id="toc_42">返回参数</h3>
 
 <table>
 <thead>
@@ -1034,6 +1118,13 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td></td>
 </tr>
 <tr>
+<td>containerCode</td>
+<td>String</td>
+<td>N</td>
+<td>货柜号</td>
+<td></td>
+</tr>
+<tr>
 <td>machineStatus</td>
 <td>Int</td>
 <td>Y</td>
@@ -1042,16 +1133,45 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tr>
 <tr>
 <td>slotList</td>
-<td>Array</td>
+<td>ArrayList&lt;Slot&gt;</td>
 <td>Y</td>
 <td>货道陈列详情</td>
-<td></td>
+<td>Slot见下表</td>
 </tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
 <tr>
 <td>slotNum</td>
 <td>String</td>
 <td>Y</td>
 <td>货道号</td>
+<td></td>
+</tr>
+<tr>
+<td>row</td>
+<td>Int</td>
+<td>Y</td>
+<td>行</td>
+<td></td>
+</tr>
+<tr>
+<td>col</td>
+<td>Int</td>
+<td>Y</td>
+<td>列</td>
 <td></td>
 </tr>
 <tr>
@@ -1113,67 +1233,71 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_44">返回参数示例</h3>
+<h3 id="toc_43">返回参数示例</h3>
 
 <div><pre><code class="language-none">{
     &quot;code&quot;:&quot;200&quot;,
     &quot;msg&quot;:&quot;success&quot;,
-    &quot;data&quot;&quot;:{
-            &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,   
-            &quot;machineStatus&quot;:10,    
-            &quot;slotList&quot;: 
-                [
-                    {
-                        &quot;slotNum&quot;:&quot;01&quot;,    
-                        &quot;skuCode&quot;:0000001, 
-                        &quot;skuName&quot;:&quot;600ml可口可乐&quot;,   
-                        &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,   
-                        &quot;originalPrice&quot;:&quot;10.50&quot;, 
-                        &quot;actualPrice&quot;:&quot;10.50&quot;,       
-                        &quot;maxInventory&quot;:10,   
-                        &quot;currentInventory&quot;:3,    
-                        &quot;slotStatus&quot;:0               
-                    },
-                    {
-                        &quot;slotNum&quot;:&quot;02&quot;,   
-                        &quot;skuCode&quot;:&quot;0000002&quot;, 
-                        &quot;skuName&quot;:&quot;原味乐事薯片&quot;,   
-                        &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,   
-                        &quot;originalPrice&quot;:&quot;10.50&quot;, 
-                        &quot;actualPrice&quot;:&quot;10.50&quot;,           
-                        &quot;maxInventory&quot;:10,   
-                        &quot;currentInventory&quot;:5, 
-                        &quot;slotStatus&quot;:0   
-                    }
-                ] 
-    }   
+    &quot;data&quot;:{
+        &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,
+        &quot;containerCode&quot;:&quot;abc123&quot;,
+        &quot;machineStatus&quot;:10,
+        &quot;slotList&quot;:[
+            {
+                &quot;slotNum&quot;:&quot;01&quot;,
+                &quot;row&quot;:1,
+                &quot;col&quot;:1,
+                &quot;skuCode&quot;:&quot;0000001&quot;,
+                &quot;skuName&quot;:&quot;600ml可口可乐&quot;,
+                &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,
+                &quot;originalPrice&quot;:&quot;10.50&quot;,
+                &quot;actualPrice&quot;:&quot;10.50&quot;,
+                &quot;maxInventory&quot;:10,
+                &quot;currentInventory&quot;:3,
+                &quot;slotStatus&quot;:0
+            },
+            {
+                &quot;slotNum&quot;:&quot;02&quot;,
+                &quot;row&quot;:1,
+                &quot;col&quot;:2,
+                &quot;skuCode&quot;:&quot;0000002&quot;,
+                &quot;skuName&quot;:&quot;原味乐事薯片&quot;,
+                &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,
+                &quot;originalPrice&quot;:&quot;10.50&quot;,
+                &quot;actualPrice&quot;:&quot;10.50&quot;,
+                &quot;maxInventory&quot;:10,
+                &quot;currentInventory&quot;:5,
+                &quot;slotStatus&quot;:0
+            }
+        ]
+    }
 }
 </code></pre></div>
 
-<h2 id="toc_45">4. 订单通知接口（第三方实现）</h2>
+<h2 id="toc_44">4. 订单通知接口（第三方实现）</h2>
 
 <div><pre><code class="language-none">POST  ${third.url}/order/notice
 </code></pre></div>
 
-<h3 id="toc_46">描述</h3>
+<h3 id="toc_45">描述</h3>
 
 <div><pre><code class="language-none">用户下单成功后，把订单以及支付详情通知给第三方平台出货</code></pre></div>
 
-<h3 id="toc_47">接口说明</h3>
+<h3 id="toc_46">接口说明</h3>
 
 <div><pre><code class="language-none">${third.url}为第三方平台的url，第三方需要在注册的时候提供
 接收订单平台应做幂等处理，由于网络或者其他原因，没有接收到返回参数，相同订单有可能做重复推送</code></pre></div>
 
-<h3 id="toc_48">API版本</h3>
+<h3 id="toc_47">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_49">调用方式</h3>
+<h3 id="toc_48">调用方式</h3>
 
 <div><pre><code class="language-none">POST
 请求格式:application/json</code></pre></div>
 
-<h3 id="toc_50">请求参数</h3>
+<h3 id="toc_49">请求参数</h3>
 
 <table>
 <thead>
@@ -1202,6 +1326,13 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td></td>
 </tr>
 <tr>
+<td>containerCode</td>
+<td>String</td>
+<td>Y</td>
+<td>货柜号</td>
+<td></td>
+</tr>
+<tr>
 <td>discountMoney</td>
 <td>String</td>
 <td>Y</td>
@@ -1227,7 +1358,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td>Int</td>
 <td>Y</td>
 <td>支付状态</td>
-<td>0:待支付 1:支付成功 2:支付失败<a href="#%E6%9C%BA%E5%99%A8%E7%8A%B6%E6%80%81">详见附录</a></td>
+<td>0:待支付 1:支付成功 2:支付失败<a href="#%E6%94%AF%E4%BB%98%E7%8A%B6%E6%80%81">详见附录</a></td>
 </tr>
 <tr>
 <td>refundStatus</td>
@@ -1259,16 +1390,38 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tr>
 <tr>
 <td>orderDetailList</td>
-<td>Array</td>
+<td>ArrayList&lt;OrderDetail&gt;</td>
 <td>Y</td>
 <td>订单明细详情</td>
-<td></td>
+<td>OrderDetail见下表</td>
 </tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
 <tr>
 <td>skuCode</td>
 <td>String</td>
 <td>Y</td>
 <td>商品code</td>
+<td></td>
+</tr>
+<tr>
+<td>slotNum</td>
+<td>String</td>
+<td>Y</td>
+<td>分配的应出货货道</td>
 <td></td>
 </tr>
 <tr>
@@ -1278,18 +1431,27 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td>商品数量</td>
 <td></td>
 </tr>
+<tr>
+<td>originalPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品原始单价</td>
+<td></td>
+</tr>
+<tr>
+<td>actualPrice</td>
+<td>String</td>
+<td>Y</td>
+<td>商品真实单价</td>
+<td>当存在优惠券时,此价格会被拆分抵扣.例如:使用满5减1的优惠券,购买3罐可乐($2.0),此时前2罐可乐的真实单价为$1.67,第3罐可乐的真实单价为$1.66</td>
+</tr>
 </tbody>
 </table>
 
-<h3 id="toc_51">请求参数示例</h3>
-
 <div><pre><code class="language-none">{
-    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
-    &quot;salt&quot;:1234,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
-    &quot;utc&quot;:1526697000000,
-    &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,   
+    &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,
     &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,
+    &quot;containerCode&quot;:&quot;02&quot;,
     &quot;discountMoney&quot;:&quot;12.00&quot;,
     &quot;originAmount&quot;:&quot;120.00&quot;,
     &quot;actualAmount&quot;:&quot;108.00&quot;,
@@ -1298,23 +1460,38 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
     &quot;orderTime&quot;:1526696000000,
     &quot;payCompleteTime&quot;:1526697000000,
     &quot;payMethod&quot;:1,
-    &quot;orderDetailList&quot;:  
-        [
-           
-                {
-                    &quot;skuCode&quot;:&quot;000000001&quot;,    
-                    &quot;quantity&quot;:3    
-                },
-            
-                {
-                    &quot;skuCode&quot;:&quot;000000002&quot;,  
-                    &quot;quantity&quot;:5   
-                }
-        ]    
+    &quot;orderDetailList&quot;:[
+        {
+            &quot;skuCode&quot;:&quot;000000001&quot;,
+            &quot;slotNum&quot;:&quot;01&quot;,
+            &quot;quantity&quot;:3,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;
+        },
+        {
+            &quot;skuCode&quot;:&quot;000000002&quot;,
+            &quot;slotNum&quot;:&quot;02&quot;,
+            &quot;quantity&quot;:5,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;
+        }
+    ]
+}</code></pre></div>
+
+<h3 id="toc_50">请求参数示例</h3>
+
+<div><pre><code class="language-none">{
+    &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
+    &quot;salt&quot;:1234,
+    &quot;signatures&quot;:[
+        &quot;bf36b8bd69ca354a0985f59c415fc719&quot;
+    ],
+    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:&quot;{\&quot;orderViewId\&quot;:\&quot;XBL00000000000252\&quot;,\&quot;machineCode\&quot;:\&quot;XHJSHnull1990000000108714\&quot;,\&quot;containerCode\&quot;:\&quot;02\&quot;,\&quot;discountMoney\&quot;:\&quot;12.00\&quot;,\&quot;originAmount\&quot;:\&quot;120.00\&quot;,\&quot;actualAmount\&quot;:\&quot;108.00\&quot;,\&quot;payStatus\&quot;:1,\&quot;refundStatus\&quot;:0,\&quot;orderTime\&quot;:1526696000000,\&quot;payCompleteTime\&quot;:1526697000000,\&quot;payMethod\&quot;:1,\&quot;orderDetailList\&quot;:[{\&quot;skuCode\&quot;:\&quot;000000001\&quot;,\&quot;slotNum\&quot;:\&quot;01\&quot;,\&quot;quantity\&quot;:3,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;},{\&quot;skuCode\&quot;:\&quot;000000002\&quot;,\&quot;slotNum\&quot;:\&quot;02\&quot;,\&quot;quantity\&quot;:5,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;}]}&quot;
 }
 </code></pre></div>
 
-<h3 id="toc_52">返回参数示例</h3>
+<h3 id="toc_51">返回参数示例</h3>
 
 <div><pre><code class="language-none">
 {
@@ -1325,28 +1502,28 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 }
 </code></pre></div>
 
-<h2 id="toc_53">5. 出货回调</h2>
+<h2 id="toc_52">5. 出货回调</h2>
 
 <div><pre><code class="language-none">POST  ${owitho.url}/order/callback</code></pre></div>
 
-<h3 id="toc_54">描述</h3>
+<h3 id="toc_53">描述</h3>
 
 <div><pre><code class="language-none">第三方平台接收到出货订单后，回调owitho平台告知出货结果。</code></pre></div>
 
-<h3 id="toc_55">接口说明</h3>
+<h3 id="toc_54">接口说明</h3>
 
 <div><pre><code class="language-none">出货结果按商品平铺展开，每一个商品对应一条出货详情记录。如：订单包含3瓶可乐、2包薯片，则出货详情对应5条记录。回调接口的出货状态不应该传100（出货中）。</code></pre></div>
 
-<h3 id="toc_56">API版本</h3>
+<h3 id="toc_55">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_57">调用方式</h3>
+<h3 id="toc_56">调用方式</h3>
 
 <div><pre><code class="language-none">POST
 请求格式:application/json</code></pre></div>
 
-<h3 id="toc_58">请求参数</h3>
+<h3 id="toc_57">请求参数</h3>
 
 <table>
 <thead>
@@ -1407,16 +1584,32 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td>Y</td>
 <td>-</td>
 <td>出货状态</td>
-<td>200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+<td>200:出货成功 300:部分成功 400:出货失败 <a href="#%E5%87%BA%E8%B4%A7%E7%8A%B6%E6%80%81">详见附录</a></td>
 </tr>
 <tr>
 <td>outDetailList</td>
-<td>Array</td>
+<td>ArrayList&lt;OutDetail&gt;</td>
 <td>Y</td>
 <td>-</td>
 <td>出货详情</td>
 <td>出货详情根据订单按单个商品平铺展开</td>
 </tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>请求参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>长度</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
 <tr>
 <td>slotNum</td>
 <td>string</td>
@@ -1439,48 +1632,59 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td>Y</td>
 <td>-</td>
 <td>每个商品的出货状态</td>
-<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E5%87%BA%E8%B4%A7%E7%8A%B6%E6%80%81">详见附录</a></td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="toc_59">请求参数示例</h3>
+<div><pre><code class="language-none">{
+    &quot;machineCode&quot;:&quot;XHJSHnull1990000000108714&quot;,
+    &quot;containerCode&quot;:&quot;abc123&quot;,
+    &quot;machineStatus&quot;:10,
+    &quot;slotList&quot;:[
+        {
+            &quot;slotNum&quot;:&quot;01&quot;,
+            &quot;row&quot;:1,
+            &quot;col&quot;:1,
+            &quot;skuCode&quot;:&quot;0000001&quot;,
+            &quot;skuName&quot;:&quot;600ml可口可乐&quot;,
+            &quot;skuDesc&quot;:&quot;600ml可口可乐&quot;,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;,
+            &quot;maxInventory&quot;:10,
+            &quot;currentInventory&quot;:3,
+            &quot;slotStatus&quot;:0
+        },
+        {
+            &quot;slotNum&quot;:&quot;02&quot;,
+            &quot;row&quot;:1,
+            &quot;col&quot;:2,
+            &quot;skuCode&quot;:&quot;0000002&quot;,
+            &quot;skuName&quot;:&quot;原味乐事薯片&quot;,
+            &quot;skuDesc&quot;:&quot;原味乐事薯片&quot;,
+            &quot;originalPrice&quot;:&quot;10.50&quot;,
+            &quot;actualPrice&quot;:&quot;10.50&quot;,
+            &quot;maxInventory&quot;:10,
+            &quot;currentInventory&quot;:5,
+            &quot;slotStatus&quot;:0
+        }
+    ]
+}</code></pre></div>
+
+<h3 id="toc_58">请求参数示例</h3>
 
 <div><pre><code class="language-none">{
     &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
     &quot;salt&quot;:9527,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
+    &quot;signatures&quot;:[
+        &quot;bf36b8bd69ca354a0985f59c415fc719&quot;
+    ],
     &quot;utc&quot;:1526697000000,
-    &quot;data&quot;:{
-        &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;,
-        &quot;outStatus&quot;:200,
-        &quot;outDetailList&quot;:[
-            {
-                &quot;slotNum&quot;:&quot;01&quot;,
-                &quot;skuCode&quot;:&quot;20000000100&quot;,
-                &quot;status&quot;:&quot;01&quot;
-            },
-            {
-                &quot;slotNum&quot;:&quot;01&quot;,
-                &quot;skuCode&quot;:&quot;20000000100&quot;,
-                &quot;status&quot;:&quot;01&quot;
-            },
-            {
-                &quot;slotNum&quot;:&quot;02&quot;,
-                &quot;skuCode&quot;:&quot;20000000200&quot;,
-                &quot;status&quot;:&quot;01&quot;
-            },
-            {
-                &quot;slotNum&quot;:&quot;03&quot;,
-                &quot;skuCode&quot;:&quot;20000000200&quot;,
-                &quot;status&quot;:&quot;01&quot;
-            }
-        ]
-    }
+    &quot;data&quot;:&quot;{\&quot;machineCode\&quot;:\&quot;XHJSHnull1990000000108714\&quot;,\&quot;containerCode\&quot;:\&quot;abc123\&quot;,\&quot;machineStatus\&quot;:10,\&quot;slotList\&quot;:[{\&quot;slotNum\&quot;:\&quot;01\&quot;,\&quot;row\&quot;:1,\&quot;col\&quot;:1,\&quot;skuCode\&quot;:\&quot;0000001\&quot;,\&quot;skuName\&quot;:\&quot;600ml可口可乐\&quot;,\&quot;skuDesc\&quot;:\&quot;600ml可口可乐\&quot;,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;,\&quot;maxInventory\&quot;:10,\&quot;currentInventory\&quot;:3,\&quot;slotStatus\&quot;:0},{\&quot;slotNum\&quot;:\&quot;02\&quot;,\&quot;row\&quot;:1,\&quot;col\&quot;:2,\&quot;skuCode\&quot;:\&quot;0000002\&quot;,\&quot;skuName\&quot;:\&quot;原味乐事薯片\&quot;,\&quot;skuDesc\&quot;:\&quot;原味乐事薯片\&quot;,\&quot;originalPrice\&quot;:\&quot;10.50\&quot;,\&quot;actualPrice\&quot;:\&quot;10.50\&quot;,\&quot;maxInventory\&quot;:10,\&quot;currentInventory\&quot;:5,\&quot;slotStatus\&quot;:0}]}&quot;
 }
 </code></pre></div>
 
-<h3 id="toc_60">返回参数</h3>
+<h3 id="toc_59">返回参数</h3>
 
 <table>
 <thead>
@@ -1514,7 +1718,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_61">返回结果示例</h3>
+<h3 id="toc_60">返回结果示例</h3>
 
 <p>成功返回值</p>
 
@@ -1532,28 +1736,28 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
     &quot;data&quot;:&quot;&quot;
 }</code></pre></div>
 
-<h2 id="toc_62">6. 出货结果查询(第三方实现)</h2>
+<h2 id="toc_61">6. 出货结果查询(第三方实现)</h2>
 
 <div><pre><code class="language-none">POST  ${third.url}/order/query</code></pre></div>
 
-<h3 id="toc_63">描述</h3>
+<h3 id="toc_62">描述</h3>
 
 <div><pre><code class="language-none">第三方平台提供的订单出货结果查询接口，owitho在超时未接收到回调后，会主动查询出货结果</code></pre></div>
 
-<h3 id="toc_64">接口说明</h3>
+<h3 id="toc_63">接口说明</h3>
 
 <div><pre><code class="language-none">根据唯一订单编号查询该订单的出货结果，出货结果按商品平铺展开，每一个商品对应一条出货详情记录。如：订单包含3瓶可乐、2包薯片，则出货详情对应5条记录。</code></pre></div>
 
-<h3 id="toc_65">API版本</h3>
+<h3 id="toc_64">API版本</h3>
 
 <div><pre><code class="language-none">0.1</code></pre></div>
 
-<h3 id="toc_66">调用方式</h3>
+<h3 id="toc_65">调用方式</h3>
 
 <div><pre><code class="language-none">POST
 请求格式:application/json</code></pre></div>
 
-<h3 id="toc_67">请求参数</h3>
+<h3 id="toc_66">请求参数</h3>
 
 <table>
 <thead>
@@ -1579,19 +1783,22 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_68">请求参数示例</h3>
+<div><pre><code class="language-none">{
+    &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;
+}</code></pre></div>
+
+<h3 id="toc_67">请求参数示例</h3>
 
 <div><pre><code class="language-none">{
     &quot;appId&quot;:&quot;4cdbc040657a4847b2667e31d9e2c3d9&quot;,
     &quot;salt&quot;:9527,
-    &quot;signature&quot;:&quot;5fsh8a99xddf5asqw90v12a&quot;,
-    &quot;utc&quot;:1526697000000,
-    &quot;data&quot;:{
-        &quot;orderViewId&quot;:&quot;XBL00000000000252&quot;
-    }
+    &quot;signatures&quot;:[
+        &quot;bf36b8bd69ca354a0985f59c415fc719&quot;
+    ],    &quot;utc&quot;:1526697000000,
+    &quot;data&quot;:&quot;{\&quot;orderViewId\&quot;:\&quot;XBL00000000000252\&quot;}&quot;
 }</code></pre></div>
 
-<h3 id="toc_69">返回参数</h3>
+<h3 id="toc_68">返回参数</h3>
 
 <table>
 <thead>
@@ -1632,7 +1839,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <td>outStatus</td>
 <td>int</td>
 <td>出货状态</td>
-<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E7%8A%B6%E6%80%81%E5%AD%97%E5%85%B8">详见附录</a></td>
+<td>100:出货中 200:出货成功 300:部分成功 400:出货失败 <a href="#%E5%87%BA%E8%B4%A7%E7%8A%B6%E6%80%81">详见附录</a></td>
 </tr>
 <tr>
 <td>outDetailList</td>
@@ -1655,13 +1862,13 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 <tr>
 <td>status</td>
 <td>int</td>
-<td>Y</td>
-<td>-</td>
+<td>每个商品的出货状态</td>
+<td>200:出货成功 400:出货失败 <a href="#%E5%87%BA%E8%B4%A7%E7%8A%B6%E6%80%81">详见附录</a></td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="toc_70">返回结果示例</h3>
+<h3 id="toc_69">返回结果示例</h3>
 
 <p>成功返回值</p>
 
@@ -1675,22 +1882,22 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
             {
                 &quot;slotNum&quot;:&quot;01&quot;,
                 &quot;skuCode&quot;:&quot;20000000100&quot;,
-                &quot;status&quot;:&quot;01&quot;
+                &quot;status&quot;:200
             },
             {
                 &quot;slotNum&quot;:&quot;01&quot;,
                 &quot;skuCode&quot;:&quot;20000000100&quot;,
-                &quot;status&quot;:&quot;01&quot;
+                &quot;status&quot;:200
             },
             {
                 &quot;slotNum&quot;:&quot;02&quot;,
                 &quot;skuCode&quot;:&quot;20000000200&quot;,
-                &quot;status&quot;:&quot;01&quot;
+                &quot;status&quot;:200
             },
             {
                 &quot;slotNum&quot;:&quot;03&quot;,
                 &quot;skuCode&quot;:&quot;20000000200&quot;,
-                &quot;status&quot;:&quot;01&quot;
+                &quot;status&quot;:200
             }
         ]
     }
@@ -1704,9 +1911,9 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
     &quot;data&quot;:&quot;&quot;
 }</code></pre></div>
 
-<h2 id="toc_71">附录</h2>
+<h2 id="toc_70">附录</h2>
 
-<h3 id="toc_72">通用返回码</h3>
+<h3 id="通用返回码">通用返回码</h3>
 
 <table>
 <thead>
@@ -1752,7 +1959,9 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_73">状态字典</h3>
+<h3 id="toc_71">状态字典</h3>
+
+<h3 id="出货状态">出货状态</h3>
 
 <table>
 <thead>
@@ -1782,7 +1991,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_74">机器状态</h3>
+<h3 id="机器状态">机器状态</h3>
 
 <table>
 <thead>
@@ -1808,7 +2017,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_75">货道状态</h3>
+<h3 id="货道状态">货道状态</h3>
 
 <table>
 <thead>
@@ -1830,7 +2039,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_76">支付状态</h3>
+<h3 id="支付状态">支付状态</h3>
 
 <table>
 <thead>
@@ -1856,7 +2065,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_77">退款状态</h3>
+<h3 id="退款状态">退款状态</h3>
 
 <table>
 <thead>
@@ -1886,7 +2095,7 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_78">支付方式</h3>
+<h3 id="支付方式">支付方式</h3>
 
 <table>
 <thead>
@@ -1924,13 +2133,13 @@ utc为请求发起的时间（毫秒单位时间戳）</code></pre></div>
 </tbody>
 </table>
 
-<h3 id="toc_79">owitho平台测试&amp;生产地址</h3>
+<h3 id="toc_72">owitho平台测试&amp;生产地址</h3>
 
 <div><pre><code class="language-none">测试地址：https://open.owitho.intra.im/
 生产地址：https://open.owitho.com/
 </code></pre></div>
 
-<h1 id="toc_80">GETTING START</h1>
+<h1 id="toc_73">GETTING START</h1>
 
 <p><a href="https://github.com/owitho-xingbianli/vending-machine-open-platform-demo">fork me on  github</a></p>
 
