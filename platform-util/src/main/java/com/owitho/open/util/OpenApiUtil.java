@@ -7,6 +7,7 @@ import com.owitho.open.model.ResponseModel;
 import com.owitho.open.model.TokenInfo;
 import com.owitho.open.model.TokenRequest;
 import com.owitho.open.util.validate.function.ValidateHelper;
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
@@ -63,9 +64,9 @@ public class OpenApiUtil {
      */
     public static <T, R> ResponseModel<R> remoteInvoke(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
         ResponseModel response = remoteInvoke(appId, url, accessToken, data);
-
-        LinkedHashMap dataMap = (LinkedHashMap) response.getData();
-        response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
+        R returnData = clazz.newInstance();
+        BeanUtils.populate(returnData, (Map<String, ? extends Object>) response.getData());
+        response.setData(returnData);
 
         return response;
     }

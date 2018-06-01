@@ -1,5 +1,6 @@
 package com.owitho.open;
 
+import com.google.common.collect.Lists;
 import com.owitho.open.model.RequestData;
 import com.owitho.open.model.ResponseData;
 import com.owitho.open.model.ResponseModel;
@@ -9,6 +10,7 @@ import junit.framework.TestCase;
 import org.springframework.util.DigestUtils;
 import sun.security.provider.MD5;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -35,19 +37,21 @@ public class ApiUtilTest
     /**
      * Rigourous Test :-)
      */
-    public static final String APPID = "bluesky";
+    public static final String APPID = "annzu";
 
-    public static final String SECRETKEY = "sss";
+    public static final String SECRETKEY = "huyu";
 
-    public static final String URL = "https://open.owitho.intra.im";
+    public static final String URL = "https://open.owitho.com";
 
     public void test() throws Exception {
 
-        String before = "appId%3Dbluesky%26salt%3D1817%26utc%3D1527577804587%26secretKey%3Dsss";
-        String after = DigestUtils.md5DigestAsHex(before.getBytes("UTF-8"));
-        System.out.println(after);
-    }
+//        String before = "appId=annzu&accessToken=27dbb0d5-1ec7-4ec3-9c25-1e867b7c5a19&data={\"machineCode\": \"99000055\"}&salt=3264&utc=1527670432524";
+//        String after = DigestUtils.md5DigestAsHex(before.getBytes("UTF-8"));
+//        System.out.println(after);
 
+        List<String> sign = OpenApiUtil.generateSignature("annzu", Lists.newArrayList("27dbb0d5-1ec7-4ec3-9c25-1e867b7c5a19"),"{\"machineCode\":\"99000055\"}",4103,1527676932653l);
+        System.out.println(sign);
+    }
     public void testGetAccessToken() throws Exception {
         ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", SECRETKEY);
         System.out.println(response);
