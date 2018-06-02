@@ -52,6 +52,7 @@ public class ApiUtilTest
         List<String> sign = OpenApiUtil.generateSignature("annzu", Lists.newArrayList("27dbb0d5-1ec7-4ec3-9c25-1e867b7c5a19"),"{\"machineCode\":\"99000055\"}",4103,1527676932653l);
         System.out.println(sign);
     }
+
     public void testGetAccessToken() throws Exception {
         ResponseModel<TokenInfo> response = OpenApiUtil.getAccessToken(APPID, URL + "/getAccessToken", SECRETKEY);
         System.out.println(response);

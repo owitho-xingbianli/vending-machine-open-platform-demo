@@ -44,10 +44,7 @@ public class OpenApiUtil {
      */
     public static <T, R> R remoteInvokeReturnData(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
         ResponseModel<R> response = remoteInvoke(appId, url, accessToken, data, clazz);
-        if (!response.hasSuccess()) {
-            logger.error("远程调用返回失败！response:{}", response);
-            throw new RuntimeException("远程调用返回失败！");
-        }
+
         return response.getData();
     }
 
@@ -64,9 +61,12 @@ public class OpenApiUtil {
      */
     public static <T, R> ResponseModel<R> remoteInvoke(String appId, String url, String accessToken, T data, Class<? extends R> clazz) throws Exception {
         ResponseModel response = remoteInvoke(appId, url, accessToken, data);
-        R returnData = clazz.newInstance();
-        BeanUtils.populate(returnData, (Map<String, ? extends Object>) response.getData());
-        response.setData(returnData);
+        if (!response.hasSuccess()) {
+            logger.error("远程调用返回失败！response:{}", response);
+            throw new RuntimeException("远程调用返回失败！");
+        }
+        LinkedHashMap dataMap = (LinkedHashMap) response.getData();
+        response.setData(JsonHelper.transJsonStringToObj(JsonHelper.transObjToJsonString(dataMap), clazz));
 
         return response;
     }
